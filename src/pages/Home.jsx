@@ -11,7 +11,7 @@ const BLOOD_TYPE_ORDER = ["O-", "O+", "A+", "A-", "B+", "B-", "AB+", "AB-"];
 // Using the full origin here since the Laravel API (kuotsu-api) runs on a
 // different port than the Vite dev server (kuotsu) — a relative path like
 // '/api/blood-inventory' would 404 or hit the wrong server otherwise.
-const INVENTORY_ENDPOINT = "http://127.0.0.1:8000/api/blood-inventory";
+const INVENTORY_ENDPOINT = `${import.meta.env.VITE_API_URL}/api/blood-inventory`;
 
 // lucide-react dropped brand/logo icons (Instagram, Facebook, Twitter, etc.)
 // in newer versions, so we use a small inline SVG matching the same outline
