@@ -170,13 +170,13 @@ export default function AdminDashboard() {
                     <td className="admin-dash-actions">
                       <button
                         className="admin-dash-btn"
-                        onClick={() => reviewDonation(d, 'approved')}
+                        onClick={() => reviewDonation(d, 'completed')}
                       >
                         Approve
                       </button>
                       <button
                         className="admin-dash-btn admin-dash-btn--danger"
-                        onClick={() => reviewDonation(d, 'rejected')}
+                        onClick={() => reviewDonation(d, 'cancelled')}
                       >
                         Reject
                       </button>
