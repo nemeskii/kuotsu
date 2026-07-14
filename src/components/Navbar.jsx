@@ -61,14 +61,9 @@ export default function Navbar({ tone = "dark" }) {
             <Link to="/dashboard">Dashboard</Link>
           </li>
         ) : (
-          <>
-            <li>
-              <Link to="/donor/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/register">Register</Link>
-            </li>
-          </>
+          <li>
+            <Link to="/donor/login">Login</Link>
+          </li>
         )}
       </ul>
 
@@ -133,14 +128,9 @@ export default function Navbar({ tone = "dark" }) {
               <Link to="/dashboard">Dashboard</Link>
             </li>
           ) : (
-            <>
-              <li>
-                <Link to="/donor/login">Login</Link>
-              </li>
-              <li>
-                <Link to="/register">Register</Link>
-              </li>
-            </>
+            <li>
+              <Link to="/donor/login">Login</Link>
+            </li>
           )}
           {onHome && (
             <li>
