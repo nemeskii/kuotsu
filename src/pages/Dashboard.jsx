@@ -233,6 +233,10 @@ export default function Dashboard() {
           <>
             <div className="admin-dash-titlebar">
               <h1 className="admin-dash-heading">Log a donation</h1>
+              <p className="admin-dash-sub">
+                Record a donation you've made. An admin will verify it, and
+                your availability updates automatically once approved.
+              </p>
             </div>
 
             {formMessage && (

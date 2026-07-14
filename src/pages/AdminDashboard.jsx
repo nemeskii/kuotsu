@@ -11,6 +11,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterBloodGroup, setFilterBloodGroup] = useState('');
+  const [donations, setDonations] = useState([]);
+  const [donationsLoading, setDonationsLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchDonors = async () => {
@@ -33,10 +35,28 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchPendingDonations = async () => {
+    setDonationsLoading(true);
+    try {
+      const res = await api.get('/admin/donations', {
+        params: { status: 'pending' },
+      });
+      setDonations(res.data);
+    } catch (err) {
+      // non-critical, ignore
+    } finally {
+      setDonationsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchDonors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterBloodGroup]);
+
+  useEffect(() => {
+    fetchPendingDonations();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -67,6 +87,16 @@ export default function AdminDashboard() {
     }
   };
 
+  const reviewDonation = async (donation, status) => {
+    try {
+      await api.put(`/admin/donations/${donation.id}`, { status });
+      fetchPendingDonations();
+      fetchDonors();
+    } catch (e) {
+      alert('Failed to update donation');
+    }
+  };
+
   return (
     <div className="admin-dash-page">
       <div className="admin-dash-header">
@@ -84,6 +114,79 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-dash-body">
+        <div className="admin-dash-titlebar">
+          <h1 className="admin-dash-heading">Pending donations</h1>
+          <p className="admin-dash-sub">
+            {donationsLoading
+              ? 'Loading…'
+              : `${donations.length} awaiting review`}
+          </p>
+        </div>
+
+        <div className="admin-dash-table-wrap" style={{ marginBottom: 40 }}>
+          <table className="admin-dash-table">
+            <thead>
+              <tr>
+                <th>Donor</th>
+                <th>Blood group</th>
+                <th>Units</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th className="admin-dash-th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {donationsLoading && (
+                <tr>
+                  <td colSpan={6} className="admin-dash-empty">
+                    Loading…
+                  </td>
+                </tr>
+              )}
+              {!donationsLoading && donations.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="admin-dash-empty">
+                    No pending donations.
+                  </td>
+                </tr>
+              )}
+              {!donationsLoading &&
+                donations.map((d) => (
+                  <tr key={d.id}>
+                    <td className="admin-dash-name">
+                      {d.donor?.full_name || '—'}
+                      {d.donor?.phone && (
+                        <div style={{ fontSize: 13, color: '#9A9280' }}>
+                          {d.donor.phone}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <span className="admin-dash-badge">{d.blood_group}</span>
+                    </td>
+                    <td>{d.units}</td>
+                    <td>{d.donation_date}</td>
+                    <td>{d.location || '—'}</td>
+                    <td className="admin-dash-actions">
+                      <button
+                        className="admin-dash-btn"
+                        onClick={() => reviewDonation(d, 'approved')}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="admin-dash-btn admin-dash-btn--danger"
+                        onClick={() => reviewDonation(d, 'rejected')}
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+
         <div className="admin-dash-titlebar">
           <h1 className="admin-dash-heading">Donor dashboard</h1>
           <p className="admin-dash-sub">
