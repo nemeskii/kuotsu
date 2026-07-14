@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -26,9 +27,11 @@ const labelStyle = {
 };
 
 export default function Register() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     full_name: "",
     email: "",
+    password: "",
     phone: "",
     blood_group: "",
     age: "",
@@ -52,17 +55,9 @@ export default function Register() {
 
     try {
       const res = await api.post("/register", form);
+      localStorage.setItem("donor_token", res.data.token);
       setStatus({ loading: false, message: res.data.message, error: "" });
-      setForm({
-        full_name: "",
-        email: "",
-        phone: "",
-        blood_group: "",
-        age: "",
-        gender: "",
-        city: "",
-        address: "",
-      });
+      setTimeout(() => navigate("/dashboard"), 800);
     } catch (err) {
       const errors = err.response?.data?.errors;
       const firstError = errors
@@ -85,7 +80,7 @@ export default function Register() {
               Become a blood donor
             </h1>
             <p
-              className="about-teaser-text"
+              className="about-teaser-text about-teaser-text--hero"
               style={{ marginTop: 12, maxWidth: 480 }}
             >
               Register below to join our community donor list. It takes two
@@ -128,10 +123,7 @@ export default function Register() {
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            style={{ display: "grid", gap: 18 }}
-          >
+          <form onSubmit={handleSubmit} style={{ display: "grid", gap: 18 }}>
             <div>
               <label style={labelStyle} htmlFor="full_name">
                 Full name
@@ -141,7 +133,6 @@ export default function Register() {
                 id="full_name"
                 type="text"
                 name="full_name"
-                placeholder=""
                 value={form.full_name}
                 onChange={handleChange}
                 required
@@ -158,7 +149,6 @@ export default function Register() {
                   id="email"
                   type="email"
                   name="email"
-                  placeholder=""
                   value={form.email}
                   onChange={handleChange}
                   required
@@ -173,12 +163,28 @@ export default function Register() {
                   id="phone"
                   type="tel"
                   name="phone"
-                  placeholder=""
                   value={form.phone}
                   onChange={handleChange}
                   required
                 />
               </div>
+            </div>
+
+            <div>
+              <label style={labelStyle} htmlFor="password">
+                Password
+              </label>
+              <input
+                style={fieldStyle}
+                id="password"
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 18 }}>
@@ -246,43 +252,45 @@ export default function Register() {
                 City
               </label>
               <select
-                  style={fieldStyle}
-                  id="city"
-                  name="city"
-                  value={form.city}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="Select">Select</option>
-                      <option value="Chumoukedima">Chumoukedima</option>
-                      <option value="Dimapur">Dimapur</option>
-                      <option value="Kiphire">Kiphire</option>
-                      <option value="Kohima">Kohima</option>
-                      <option value="Longleng">Longleng</option>
-                      <option value="Meluri">Meluri</option>
-                      <option value="Mokokchung">Mokokchung</option>
-                      <option value="Mon">Mon</option>
-                      <option value="Niuland">Niuland</option>
-                      <option value="Noklak">Noklak</option>
-                      <option value="Peren">Peren</option>
-                      <option value="Phek">Phek</option>
-                      <option value="Shamator">Shamator</option>
-                      <option value="Tuensang">Tuensang</option>
-                      <option value="Tseminyü">Tseminyü</option>
-                      <option value="Wokha">Wokha</option>
-                      <option value="Zhunheboto">Zhunheboto</option>
-                </select>
-              </div>
+                style={fieldStyle}
+                id="city"
+                name="city"
+                value={form.city}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select</option>
+                <option value="Chumoukedima">Chumoukedima</option>
+                <option value="Dimapur">Dimapur</option>
+                <option value="Kiphire">Kiphire</option>
+                <option value="Kohima">Kohima</option>
+                <option value="Longleng">Longleng</option>
+                <option value="Meluri">Meluri</option>
+                <option value="Mokokchung">Mokokchung</option>
+                <option value="Mon">Mon</option>
+                <option value="Niuland">Niuland</option>
+                <option value="Noklak">Noklak</option>
+                <option value="Peren">Peren</option>
+                <option value="Phek">Phek</option>
+                <option value="Shamator">Shamator</option>
+                <option value="Tuensang">Tuensang</option>
+                <option value="Tseminyü">Tseminyü</option>
+                <option value="Wokha">Wokha</option>
+                <option value="Zhunheboto">Zhunheboto</option>
+              </select>
+            </div>
 
             <div>
               <label style={labelStyle} htmlFor="address">
-                Address <span style={{ fontWeight: 400, color: "#9A9280" }}>(optional)</span>
+                Address{" "}
+                <span style={{ fontWeight: 400, color: "#9A9280" }}>
+                  (optional)
+                </span>
               </label>
               <textarea
                 style={{ ...fieldStyle, height: 90, resize: "vertical" }}
                 id="address"
                 name="address"
-                placeholder=""
                 value={form.address}
                 onChange={handleChange}
               />

@@ -1,0 +1,251 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
+import "../styles/theme.css";
+import "./AdminDashboard.css";
+
+const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const [donations, setDonations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    blood_group: "",
+    units: 1,
+    donation_date: "",
+    location: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [formMessage, setFormMessage] = useState("");
+
+  const fetchDonations = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.get("/donations");
+      setDonations(res.data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("donor_token");
+        navigate("/donor/login");
+      } else {
+        setError("Failed to load your donation history");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDonations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setFormMessage("");
+    try {
+      const res = await api.post("/donations", form);
+      setFormMessage(res.data.message);
+      setForm({ blood_group: "", units: 1, donation_date: "", location: "" });
+      fetchDonations();
+    } catch (err) {
+      setFormMessage(
+        err.response?.data?.message || "Failed to log donation",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/donor/logout");
+    } catch (e) {
+      // ignore
+    }
+    localStorage.removeItem("donor_token");
+    navigate("/donor/login");
+  };
+
+  return (
+    <div className="admin-dash-page">
+      <div className="admin-dash-header">
+        <div className="admin-dash-header-inner">
+          <div>
+            <span className="site-mark admin-dash-mark">
+              COMMUNITY<span>BLOOD</span>
+            </span>
+            <div className="site-eyebrow admin-dash-eyebrow">My donations</div>
+          </div>
+          <button className="admin-dash-logout" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
+      </div>
+
+      <div className="admin-dash-body">
+        <div className="admin-dash-titlebar">
+          <h1 className="admin-dash-heading">Log a donation</h1>
+        </div>
+
+        {formMessage && (
+          <div
+            style={{
+              background: "rgba(47, 107, 79, 0.12)",
+              border: "1px solid #2F6B4F",
+              color: "#2F6B4F",
+              padding: "12px 14px",
+              borderRadius: 6,
+              marginBottom: 20,
+              fontSize: 15,
+              maxWidth: 560,
+            }}
+          >
+            {formMessage}
+          </div>
+        )}
+
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr",
+            gap: 14,
+            maxWidth: 720,
+            marginBottom: 40,
+            alignItems: "end",
+          }}
+        >
+          <label>
+            <span className="admin-dash-filter-label">Blood group</span>
+            <select
+              className="admin-dash-select"
+              name="blood_group"
+              value={form.blood_group}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select</option>
+              {BLOOD_GROUPS.map((bg) => (
+                <option key={bg} value={bg}>
+                  {bg}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span className="admin-dash-filter-label">Units</span>
+            <input
+              className="admin-dash-select"
+              type="number"
+              name="units"
+              min="1"
+              value={form.units}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            <span className="admin-dash-filter-label">Date</span>
+            <input
+              className="admin-dash-select"
+              type="date"
+              name="donation_date"
+              value={form.donation_date}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            <span className="admin-dash-filter-label">Location</span>
+            <input
+              className="admin-dash-select"
+              type="text"
+              name="location"
+              value={form.location}
+              onChange={handleChange}
+            />
+          </label>
+
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={submitting}
+            style={{ gridColumn: "1 / -1", justifySelf: "start" }}
+          >
+            {submitting ? "Logging…" : "Log donation"}
+          </button>
+        </form>
+
+        <div className="admin-dash-titlebar">
+          <h1 className="admin-dash-heading">Your donation history</h1>
+          <p className="admin-dash-sub">
+            {loading
+              ? "Loading…"
+              : `${donations.length} donation${donations.length === 1 ? "" : "s"} logged`}
+          </p>
+        </div>
+
+        {error && (
+          <div className="admin-dash-error" role="alert">
+            {error}
+          </div>
+        )}
+
+        <div className="admin-dash-table-wrap">
+          <table className="admin-dash-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Blood group</th>
+                <th>Units</th>
+                <th>Location</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading && (
+                <tr>
+                  <td colSpan={5} className="admin-dash-empty">
+                    Loading…
+                  </td>
+                </tr>
+              )}
+              {!loading && donations.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="admin-dash-empty">
+                    No donations logged yet.
+                  </td>
+                </tr>
+              )}
+              {!loading &&
+                donations.map((d) => (
+                  <tr key={d.id}>
+                    <td>{d.donation_date}</td>
+                    <td>
+                      <span className="admin-dash-badge">{d.blood_group}</span>
+                    </td>
+                    <td>{d.units}</td>
+                    <td>{d.location || "—"}</td>
+                    <td>
+                      <span className="admin-dash-status">{d.status}</span>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

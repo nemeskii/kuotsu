@@ -4,9 +4,12 @@ import About from './pages/About';
 import HowItWorks from './pages/HowItWorks';
 import Contact from './pages/Contact';
 import Register from './pages/Register';
+import DonorLogin from './pages/DonorLogin';
+import Dashboard from './pages/Dashboard';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import DonorProtectedRoute from './components/DonorProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 
 if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
@@ -23,6 +26,15 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/donor/login" element={<DonorLogin />} />
+        <Route
+          path="/dashboard"
+          element={
+            <DonorProtectedRoute>
+              <Dashboard />
+            </DonorProtectedRoute>
+          }
+        />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin/dashboard"

@@ -4,9 +4,13 @@ const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
 });
 
-// Attach the admin token (if present) to every request
+// Attach the right token depending on which part of the app is calling
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("admin_token");
+  const isAdminRoute = config.url?.startsWith("/admin");
+  const token = isAdminRoute
+    ? localStorage.getItem("admin_token")
+    : localStorage.getItem("donor_token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
