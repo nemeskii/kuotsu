@@ -10,6 +10,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [donor, setDonor] = useState(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [inventory, setInventory] = useState([]);
+  const [inventoryLoading, setInventoryLoading] = useState(true);
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,6 +39,18 @@ export default function Dashboard() {
     }
   };
 
+  const fetchInventory = async () => {
+    setInventoryLoading(true);
+    try {
+      const res = await api.get("/blood-inventory");
+      setInventory(res.data);
+    } catch (err) {
+      // silently ignore, inventory is a non-critical teaser
+    } finally {
+      setInventoryLoading(false);
+    }
+  };
+
   const fetchDonations = async () => {
     setLoading(true);
     setError("");
@@ -57,6 +71,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchProfile();
+    fetchInventory();
     fetchDonations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -111,6 +126,85 @@ export default function Dashboard() {
       </div>
 
       <div className="admin-dash-body">
+        {!profileLoading && donor && (
+          <div
+            style={{
+              background: "#fff",
+              border: "1px solid #E4DCC8",
+              borderRadius: 8,
+              padding: "22px 26px",
+              marginBottom: 28,
+              maxWidth: 560,
+            }}
+          >
+            <h2 style={{ margin: "0 0 14px", fontSize: 18 }}>
+              Account details
+            </h2>
+            <div style={{ display: "grid", gap: 6, fontSize: 15 }}>
+              <div>
+                <strong>Name:</strong> {donor.full_name}
+              </div>
+              <div>
+                <strong>Email:</strong> {donor.email}
+              </div>
+              <div>
+                <strong>Phone:</strong> {donor.phone}
+              </div>
+              {donor.blood_group && (
+                <div>
+                  <strong>Blood group:</strong> {donor.blood_group}
+                </div>
+              )}
+              {donor.city && (
+                <div>
+                  <strong>City:</strong> {donor.city}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {!inventoryLoading && inventory.length > 0 && (
+          <div style={{ marginBottom: 28, maxWidth: 720 }}>
+            <h2 style={{ margin: "0 0 14px", fontSize: 18 }}>
+              Live blood inventory
+            </h2>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: 12,
+              }}
+            >
+              {inventory.map((item) => (
+                <div
+                  key={item.type}
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #E4DCC8",
+                    borderRadius: 8,
+                    padding: "14px 12px",
+                    textAlign: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 700,
+                      color: "#AB1D2E",
+                    }}
+                  >
+                    {item.type}
+                  </div>
+                  <div style={{ fontSize: 13, color: "#5A5344", marginTop: 4 }}>
+                    {item.units} {item.units === 1 ? "donor" : "donors"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {!profileLoading && !isDonor && (
           <div
             style={{
