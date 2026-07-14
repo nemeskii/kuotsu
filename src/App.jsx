@@ -4,6 +4,7 @@ import About from './pages/About';
 import HowItWorks from './pages/HowItWorks';
 import Contact from './pages/Contact';
 import Register from './pages/Register';
+import CompleteProfile from './pages/CompleteProfile';
 import DonorLogin from './pages/DonorLogin';
 import Dashboard from './pages/Dashboard';
 import AdminLogin from './pages/AdminLogin';
@@ -26,6 +27,14 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/complete-profile"
+          element={
+            <DonorProtectedRoute>
+              <CompleteProfile />
+            </DonorProtectedRoute>
+          }
+        />
         <Route path="/donor/login" element={<DonorLogin />} />
         <Route
           path="/dashboard"

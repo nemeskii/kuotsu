@@ -6,6 +6,8 @@ import Footer from "../components/Footer";
 import "../styles/theme.css";
 import "./Home.css";
 
+const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
 const fieldStyle = {
   width: "100%",
   padding: "10px 12px",
@@ -24,14 +26,13 @@ const labelStyle = {
   fontSize: 14,
 };
 
-export default function Register() {
+export default function CompleteProfile() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    full_name: "",
-    email: "",
-    password: "",
-    phone: "",
-    date_of_birth: "",
+    blood_group: "",
+    gender: "",
+    city: "",
+    address: "",
   });
   const [status, setStatus] = useState({
     loading: false,
@@ -48,10 +49,9 @@ export default function Register() {
     setStatus({ loading: true, message: "", error: "" });
 
     try {
-      const res = await api.post("/register", form);
-      localStorage.setItem("donor_token", res.data.token);
+      const res = await api.put("/donor/profile", form);
       setStatus({ loading: false, message: res.data.message, error: "" });
-      setTimeout(() => navigate("/complete-profile"), 800);
+      setTimeout(() => navigate("/dashboard"), 800);
     } catch (err) {
       const errors = err.response?.data?.errors;
       const firstError = errors
@@ -68,17 +68,17 @@ export default function Register() {
         <div className="section" style={{ paddingTop: 40, paddingBottom: 40 }}>
           <div className="site-inner">
             <div className="site-eyebrow" style={{ color: "#AB1D2E" }}>
-              Join the network
+              Almost there
             </div>
             <h1 className="section-title" style={{ marginTop: 12 }}>
-              Create your account
+              Complete your donor profile
             </h1>
             <p
               className="about-teaser-text about-teaser-text--hero"
               style={{ marginTop: 12, maxWidth: 480 }}
             >
-              Step 1 of 2. Register an account, then finish your donor
-              profile in the next step.
+              Step 2 of 2. This is what matches you to people who need your
+              blood type nearby.
             </p>
           </div>
         </div>
@@ -118,84 +118,94 @@ export default function Register() {
           )}
 
           <form onSubmit={handleSubmit} style={{ display: "grid", gap: 18 }}>
-            <div>
-              <label style={labelStyle} htmlFor="full_name">
-                Full name
-              </label>
-              <input
-                style={fieldStyle}
-                id="full_name"
-                type="text"
-                name="full_name"
-                value={form.full_name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
               <div>
-                <label style={labelStyle} htmlFor="email">
-                  Email
+                <label style={labelStyle} htmlFor="blood_group">
+                  Blood group
                 </label>
-                <input
+                <select
                   style={fieldStyle}
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={form.email}
+                  id="blood_group"
+                  name="blood_group"
+                  value={form.blood_group}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Select</option>
+                  {BLOOD_GROUPS.map((bg) => (
+                    <option key={bg} value={bg}>
+                      {bg}
+                    </option>
+                  ))}
+                </select>
               </div>
+
               <div>
-                <label style={labelStyle} htmlFor="phone">
-                  Phone number
+                <label style={labelStyle} htmlFor="gender">
+                  Gender
                 </label>
-                <input
+                <select
                   style={fieldStyle}
-                  id="phone"
-                  type="tel"
-                  name="phone"
-                  value={form.phone}
+                  id="gender"
+                  name="gender"
+                  value={form.gender}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
             </div>
 
             <div>
-              <label style={labelStyle} htmlFor="date_of_birth">
-                Date of birth
+              <label style={labelStyle} htmlFor="city">
+                City
               </label>
-              <input
+              <select
                 style={fieldStyle}
-                id="date_of_birth"
-                type="date"
-                name="date_of_birth"
-                value={form.date_of_birth}
+                id="city"
+                name="city"
+                value={form.city}
                 onChange={handleChange}
                 required
-              />
-              <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
-                You must be 18 or older to register as a donor.
-              </div>
+              >
+                <option value="">Select</option>
+                <option value="Chumoukedima">Chumoukedima</option>
+                <option value="Dimapur">Dimapur</option>
+                <option value="Kiphire">Kiphire</option>
+                <option value="Kohima">Kohima</option>
+                <option value="Longleng">Longleng</option>
+                <option value="Meluri">Meluri</option>
+                <option value="Mokokchung">Mokokchung</option>
+                <option value="Mon">Mon</option>
+                <option value="Niuland">Niuland</option>
+                <option value="Noklak">Noklak</option>
+                <option value="Peren">Peren</option>
+                <option value="Phek">Phek</option>
+                <option value="Shamator">Shamator</option>
+                <option value="Tuensang">Tuensang</option>
+                <option value="Tseminyü">Tseminyü</option>
+                <option value="Wokha">Wokha</option>
+                <option value="Zhunheboto">Zhunheboto</option>
+              </select>
             </div>
 
             <div>
-              <label style={labelStyle} htmlFor="password">
-                Password
+              <label style={labelStyle} htmlFor="address">
+                Address{" "}
+                <span style={{ fontWeight: 400, color: "#9A9280" }}>
+                  (optional)
+                </span>
               </label>
-              <input
-                style={fieldStyle}
-                id="password"
-                type="password"
-                name="password"
-                value={form.password}
+              <textarea
+                style={{ ...fieldStyle, height: 90, resize: "vertical" }}
+                id="address"
+                name="address"
+                value={form.address}
                 onChange={handleChange}
-                autoComplete="new-password"
-                minLength={8}
-                required
               />
             </div>
 
@@ -205,7 +215,7 @@ export default function Register() {
               disabled={status.loading}
               style={{ justifySelf: "start", marginTop: 8 }}
             >
-              {status.loading ? "Creating account…" : "Continue"}
+              {status.loading ? "Saving…" : "Finish registration"}
             </button>
           </form>
         </div>
