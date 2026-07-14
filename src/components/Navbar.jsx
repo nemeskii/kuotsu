@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 export default function Navbar({ tone = "dark" }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDonorLoggedIn, setIsDonorLoggedIn] = useState(false);
 
   const onHome = location.pathname === "/";
   const onAbout = location.pathname === "/about";
@@ -13,6 +14,11 @@ export default function Navbar({ tone = "dark" }) {
   // Close the mobile menu whenever the route changes
   useEffect(() => {
     setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Check donor login status whenever the route changes
+  useEffect(() => {
+    setIsDonorLoggedIn(!!localStorage.getItem("donor_token"));
   }, [location.pathname]);
 
   // Prevent background scroll while the mobile menu is open
@@ -50,6 +56,20 @@ export default function Navbar({ tone = "dark" }) {
             Contact
           </Link>
         </li>
+        {isDonorLoggedIn ? (
+          <li>
+            <Link to="/dashboard">Dashboard</Link>
+          </li>
+        ) : (
+          <>
+            <li>
+              <Link to="/donor/login">Login</Link>
+            </li>
+            <li>
+              <Link to="/register">Register</Link>
+            </li>
+          </>
+        )}
       </ul>
 
       {onHome && (
@@ -108,6 +128,20 @@ export default function Navbar({ tone = "dark" }) {
               Contact
             </Link>
           </li>
+          {isDonorLoggedIn ? (
+            <li>
+              <Link to="/dashboard">Dashboard</Link>
+            </li>
+          ) : (
+            <>
+              <li>
+                <Link to="/donor/login">Login</Link>
+              </li>
+              <li>
+                <Link to="/register">Register</Link>
+              </li>
+            </>
+          )}
           {onHome && (
             <li>
               <Link to="/admin/login">Admin</Link>
