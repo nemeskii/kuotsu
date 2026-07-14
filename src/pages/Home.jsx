@@ -250,10 +250,10 @@ export default function Home() {
         <div className="about-teaser">
           <div className="section-kicker">About this network</div>
           <h2 className="section-title">Not a one-off drive. A standing network.</h2>
-          <p className="about-teaser-text">
-            Community Blood connects donors and patients directly, so help
-            doesn't wait for the next scheduled drive to arrive.
-          </p>
+          <p className="about-teaser-text about-teaser-text--details">
+  Community Blood connects donors and patients directly, so help
+  doesn't wait for the next scheduled drive to arrive.
+</p>
           <Link to="/about" className="about-teaser-link">
             Read our story →
           </Link>
