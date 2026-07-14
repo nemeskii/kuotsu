@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 import "../styles/theme.css";
 import "./AdminDashboard.css";
@@ -8,6 +8,8 @@ const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [donor, setDonor] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,6 +21,21 @@ export default function Dashboard() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [formMessage, setFormMessage] = useState("");
+
+  const fetchProfile = async () => {
+    setProfileLoading(true);
+    try {
+      const res = await api.get("/donor/me");
+      setDonor(res.data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("donor_token");
+        navigate("/donor/login");
+      }
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const fetchDonations = async () => {
     setLoading(true);
@@ -39,6 +56,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    fetchProfile();
     fetchDonations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -74,6 +92,8 @@ export default function Dashboard() {
     navigate("/donor/login");
   };
 
+  const isDonor = !!donor?.blood_group;
+
   return (
     <div className="admin-dash-page">
       <div className="admin-dash-header">
@@ -91,160 +111,192 @@ export default function Dashboard() {
       </div>
 
       <div className="admin-dash-body">
-        <div className="admin-dash-titlebar">
-          <h1 className="admin-dash-heading">Log a donation</h1>
-        </div>
-
-        {formMessage && (
+        {!profileLoading && !isDonor && (
           <div
             style={{
-              background: "rgba(47, 107, 79, 0.12)",
-              border: "1px solid #2F6B4F",
-              color: "#2F6B4F",
-              padding: "12px 14px",
-              borderRadius: 6,
-              marginBottom: 20,
-              fontSize: 15,
+              background: "rgba(171, 29, 46, 0.08)",
+              border: "1px solid #AB1D2E",
+              borderRadius: 8,
+              padding: "24px 28px",
+              marginBottom: 40,
               maxWidth: 560,
             }}
           >
-            {formMessage}
+            <h2 style={{ margin: "0 0 8px", fontSize: 20 }}>
+              Want to donate blood?
+            </h2>
+            <p style={{ margin: "0 0 18px", color: "#5A5344", fontSize: 15 }}>
+              Register as a donor to join our network. It takes about a
+              minute, and one donation can help up to three patients.
+            </p>
+            <Link to="/complete-profile" className="btn btn-primary">
+              Register as donor
+            </Link>
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr",
-            gap: 14,
-            maxWidth: 720,
-            marginBottom: 40,
-            alignItems: "end",
-          }}
-        >
-          <label>
-            <span className="admin-dash-filter-label">Blood group</span>
-            <select
-              className="admin-dash-select"
-              name="blood_group"
-              value={form.blood_group}
-              onChange={handleChange}
-              required
+        {!profileLoading && isDonor && (
+          <>
+            <div className="admin-dash-titlebar">
+              <h1 className="admin-dash-heading">Log a donation</h1>
+            </div>
+
+            {formMessage && (
+              <div
+                style={{
+                  background: "rgba(47, 107, 79, 0.12)",
+                  border: "1px solid #2F6B4F",
+                  color: "#2F6B4F",
+                  padding: "12px 14px",
+                  borderRadius: 6,
+                  marginBottom: 20,
+                  fontSize: 15,
+                  maxWidth: 560,
+                }}
+              >
+                {formMessage}
+              </div>
+            )}
+
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                gap: 14,
+                maxWidth: 720,
+                marginBottom: 40,
+                alignItems: "end",
+              }}
             >
-              <option value="">Select</option>
-              {BLOOD_GROUPS.map((bg) => (
-                <option key={bg} value={bg}>
-                  {bg}
-                </option>
-              ))}
-            </select>
-          </label>
+              <label>
+                <span className="admin-dash-filter-label">Blood group</span>
+                <select
+                  className="admin-dash-select"
+                  name="blood_group"
+                  value={form.blood_group}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select</option>
+                  {BLOOD_GROUPS.map((bg) => (
+                    <option key={bg} value={bg}>
+                      {bg}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          <label>
-            <span className="admin-dash-filter-label">Units</span>
-            <input
-              className="admin-dash-select"
-              type="number"
-              name="units"
-              min="1"
-              value={form.units}
-              onChange={handleChange}
-              required
-            />
-          </label>
+              <label>
+                <span className="admin-dash-filter-label">Units</span>
+                <input
+                  className="admin-dash-select"
+                  type="number"
+                  name="units"
+                  min="1"
+                  value={form.units}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
 
-          <label>
-            <span className="admin-dash-filter-label">Date</span>
-            <input
-              className="admin-dash-select"
-              type="date"
-              name="donation_date"
-              value={form.donation_date}
-              onChange={handleChange}
-              required
-            />
-          </label>
+              <label>
+                <span className="admin-dash-filter-label">Date</span>
+                <input
+                  className="admin-dash-select"
+                  type="date"
+                  name="donation_date"
+                  value={form.donation_date}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
 
-          <label>
-            <span className="admin-dash-filter-label">Location</span>
-            <input
-              className="admin-dash-select"
-              type="text"
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-            />
-          </label>
+              <label>
+                <span className="admin-dash-filter-label">Location</span>
+                <input
+                  className="admin-dash-select"
+                  type="text"
+                  name="location"
+                  value={form.location}
+                  onChange={handleChange}
+                />
+              </label>
 
-          <button
-            className="btn btn-primary"
-            type="submit"
-            disabled={submitting}
-            style={{ gridColumn: "1 / -1", justifySelf: "start" }}
-          >
-            {submitting ? "Logging…" : "Log donation"}
-          </button>
-        </form>
+              <button
+                className="btn btn-primary"
+                type="submit"
+                disabled={submitting}
+                style={{ gridColumn: "1 / -1", justifySelf: "start" }}
+              >
+                {submitting ? "Logging…" : "Log donation"}
+              </button>
+            </form>
 
-        <div className="admin-dash-titlebar">
-          <h1 className="admin-dash-heading">Your donation history</h1>
-          <p className="admin-dash-sub">
-            {loading
-              ? "Loading…"
-              : `${donations.length} donation${donations.length === 1 ? "" : "s"} logged`}
-          </p>
-        </div>
+            <div className="admin-dash-titlebar">
+              <h1 className="admin-dash-heading">Your donation history</h1>
+              <p className="admin-dash-sub">
+                {loading
+                  ? "Loading…"
+                  : `${donations.length} donation${donations.length === 1 ? "" : "s"} logged`}
+              </p>
+            </div>
 
-        {error && (
-          <div className="admin-dash-error" role="alert">
-            {error}
-          </div>
-        )}
+            {error && (
+              <div className="admin-dash-error" role="alert">
+                {error}
+              </div>
+            )}
 
-        <div className="admin-dash-table-wrap">
-          <table className="admin-dash-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Blood group</th>
-                <th>Units</th>
-                <th>Location</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading && (
-                <tr>
-                  <td colSpan={5} className="admin-dash-empty">
-                    Loading…
-                  </td>
-                </tr>
-              )}
-              {!loading && donations.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="admin-dash-empty">
-                    No donations logged yet.
-                  </td>
-                </tr>
-              )}
-              {!loading &&
-                donations.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.donation_date}</td>
-                    <td>
-                      <span className="admin-dash-badge">{d.blood_group}</span>
-                    </td>
-                    <td>{d.units}</td>
-                    <td>{d.location || "—"}</td>
-                    <td>
-                      <span className="admin-dash-status">{d.status}</span>
-                    </td>
+            <div className="admin-dash-table-wrap">
+              <table className="admin-dash-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Blood group</th>
+                    <th>Units</th>
+                    <th>Location</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody>
+                  {loading && (
+                    <tr>
+                      <td colSpan={5} className="admin-dash-empty">
+                        Loading…
+                      </td>
+                    </tr>
+                  )}
+                  {!loading && donations.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="admin-dash-empty">
+                        No donations logged yet.
+                      </td>
+                    </tr>
+                  )}
+                  {!loading &&
+                    donations.map((d) => (
+                      <tr key={d.id}>
+                        <td>{d.donation_date}</td>
+                        <td>
+                          <span className="admin-dash-badge">
+                            {d.blood_group}
+                          </span>
+                        </td>
+                        <td>{d.units}</td>
+                        <td>{d.location || "—"}</td>
+                        <td>
+                          <span className="admin-dash-status">
+                            {d.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

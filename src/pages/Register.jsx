@@ -51,7 +51,7 @@ export default function Register() {
       const res = await api.post("/register", form);
       localStorage.setItem("donor_token", res.data.token);
       setStatus({ loading: false, message: res.data.message, error: "" });
-      setTimeout(() => navigate("/complete-profile"), 800);
+      setTimeout(() => navigate("/dashboard"), 800);
     } catch (err) {
       const errors = err.response?.data?.errors;
       const firstError = errors
