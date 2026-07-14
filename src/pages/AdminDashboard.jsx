@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import '../styles/theme.css';
+import './AdminDashboard.css';
+
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 export default function AdminDashboard() {
   const [donors, setDonors] = useState([]);
@@ -64,83 +68,120 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.heading}>Donor Dashboard</h1>
-        <button style={styles.logoutButton} onClick={handleLogout}>Logout</button>
+    <div className="admin-dash-page">
+      <div className="admin-dash-header">
+        <div className="admin-dash-header-inner">
+          <div>
+            <span className="site-mark admin-dash-mark">
+              COMMUNITY<span>BLOOD</span>
+            </span>
+            <div className="site-eyebrow admin-dash-eyebrow">Admin panel</div>
+          </div>
+          <button className="admin-dash-logout" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
       </div>
 
-      <div style={styles.filterRow}>
-        <select
-          style={styles.select}
-          value={filterBloodGroup}
-          onChange={(e) => setFilterBloodGroup(e.target.value)}
-        >
-          <option value="">All Blood Groups</option>
-          {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
-            <option key={bg} value={bg}>{bg}</option>
-          ))}
-        </select>
-      </div>
+      <div className="admin-dash-body">
+        <div className="admin-dash-titlebar">
+          <h1 className="admin-dash-heading">Donor dashboard</h1>
+          <p className="admin-dash-sub">
+            {loading
+              ? 'Loading donors…'
+              : `${donors.length} donor${donors.length === 1 ? '' : 's'} listed`}
+          </p>
+        </div>
 
-      {error && <div style={styles.errorBox}>{error}</div>}
-      {loading ? (
-        <p>Loading donors...</p>
-      ) : (
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Name</th>
-              <th style={styles.th}>Blood Group</th>
-              <th style={styles.th}>Phone</th>
-              <th style={styles.th}>City</th>
-              <th style={styles.th}>Available</th>
-              <th style={styles.th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {donors.length === 0 && (
-              <tr><td style={styles.td} colSpan={6}>No donors found.</td></tr>
-            )}
-            {donors.map((donor) => (
-              <tr key={donor.id}>
-                <td style={styles.td}>{donor.full_name}</td>
-                <td style={styles.td}>{donor.blood_group}</td>
-                <td style={styles.td}>{donor.phone}</td>
-                <td style={styles.td}>{donor.city}</td>
-                <td style={styles.td}>{donor.available ? 'Yes' : 'No'}</td>
-                <td style={styles.td}>
-                  <button style={styles.smallButton} onClick={() => toggleAvailable(donor)}>
-                    Toggle
-                  </button>
-                  <button style={{ ...styles.smallButton, background: '#b91c1c' }} onClick={() => deleteDonor(donor)}>
-                    Remove
-                  </button>
-                </td>
+        <div className="admin-dash-toolbar">
+          <label className="admin-dash-filter">
+            <span className="admin-dash-filter-label">Blood group</span>
+            <select
+              className="admin-dash-select"
+              value={filterBloodGroup}
+              onChange={(e) => setFilterBloodGroup(e.target.value)}
+            >
+              <option value="">All groups</option>
+              {BLOOD_GROUPS.map((bg) => (
+                <option key={bg} value={bg}>
+                  {bg}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {error && (
+          <div className="admin-dash-error" role="alert">
+            {error}
+          </div>
+        )}
+
+        <div className="admin-dash-table-wrap">
+          <table className="admin-dash-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Group</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Status</th>
+                <th className="admin-dash-th-actions">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {loading && (
+                <tr>
+                  <td colSpan={6} className="admin-dash-empty">
+                    Loading donors…
+                  </td>
+                </tr>
+              )}
+              {!loading && donors.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="admin-dash-empty">
+                    No donors found.
+                  </td>
+                </tr>
+              )}
+              {!loading &&
+                donors.map((donor) => (
+                  <tr key={donor.id}>
+                    <td className="admin-dash-name">{donor.full_name}</td>
+                    <td>
+                      <span className="admin-dash-badge">{donor.blood_group}</span>
+                    </td>
+                    <td>{donor.phone}</td>
+                    <td>{donor.city}</td>
+                    <td>
+                      <span
+                        className={`admin-dash-status${
+                          donor.available ? ' is-available' : ''
+                        }`}
+                      >
+                        {donor.available ? 'Available' : 'Unavailable'}
+                      </span>
+                    </td>
+                    <td className="admin-dash-actions">
+                      <button
+                        className="admin-dash-btn"
+                        onClick={() => toggleAvailable(donor)}
+                      >
+                        Toggle
+                      </button>
+                      <button
+                        className="admin-dash-btn admin-dash-btn--danger"
+                        onClick={() => deleteDonor(donor)}
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
-
-const styles = {
-  container: { maxWidth: 900, margin: '40px auto', padding: 24, fontFamily: 'system-ui, sans-serif' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  heading: { color: '#111827' },
-  logoutButton: {
-    padding: '8px 16px', background: '#374151', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
-  },
-  filterRow: { marginBottom: 16 },
-  select: { padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc' },
-  table: { width: '100%', borderCollapse: 'collapse' },
-  th: { textAlign: 'left', padding: 10, borderBottom: '2px solid #e5e7eb', fontSize: 14, color: '#374151' },
-  td: { padding: 10, borderBottom: '1px solid #f0f0f0', fontSize: 14 },
-  smallButton: {
-    padding: '6px 10px', marginRight: 6, fontSize: 13, border: 'none', borderRadius: 4,
-    background: '#2563eb', color: '#fff', cursor: 'pointer',
-  },
-  errorBox: { background: '#fee2e2', color: '#991b1b', padding: 10, borderRadius: 6, marginBottom: 16 },
-};

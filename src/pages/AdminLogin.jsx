@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import "../styles/theme.css";
+import "./AdminLogin.css";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -28,72 +30,68 @@ export default function AdminLogin() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>Admin Login</h1>
+    <div className="admin-login-page">
+      <div className="admin-login-card">
+        <span className="site-mark admin-login-mark">
+          COMMUNITY<span>BLOOD</span>
+        </span>
 
-      {error && <div style={styles.errorBox}>{error}</div>}
+        <div className="site-eyebrow admin-login-eyebrow">
+          Restricted access
+        </div>
+        <h1 className="admin-login-heading">Admin login</h1>
+        <p className="admin-login-sub">
+          Sign in to manage inventory, drives, and donor records.
+        </p>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          style={styles.input}
-          type="email"
-          name="email"
-          placeholder="Admin Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          style={styles.input}
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button style={styles.button} type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+        {error && (
+          <div className="admin-login-error" role="alert">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="admin-login-form" noValidate>
+          <label className="admin-login-field">
+            <span className="admin-login-label">Email</span>
+            <input
+              className="admin-login-input"
+              type="email"
+              name="email"
+              placeholder=""
+              value={form.email}
+              onChange={handleChange}
+              autoComplete="username"
+              required
+            />
+          </label>
+
+          <label className="admin-login-field">
+            <span className="admin-login-label">Password</span>
+            <input
+              className="admin-login-input"
+              type="password"
+              name="password"
+              placeholder=""
+              value={form.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+              required
+            />
+          </label>
+
+          <button
+            className="btn btn-primary admin-login-submit"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Logging in…" : "Log in"}
+          </button>
+        </form>
+
+        <Link to="/" className="admin-login-back">
+          ← Back to site
+        </Link>
+      </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: 360,
-    margin: "80px auto",
-    padding: 24,
-    fontFamily: "system-ui, sans-serif",
-    background: "#fff",
-    borderRadius: 8,
-    colorScheme: "light",
-  },
-  heading: { color: "#111827", marginBottom: 20, textAlign: "center" },
-  form: { display: "flex", flexDirection: "column", gap: 12 },
-  input: {
-    padding: "10px 12px",
-    fontSize: 15,
-    border: "1px solid #ccc",
-    borderRadius: 6,
-  },
-  button: {
-    padding: "12px",
-    fontSize: 16,
-    fontWeight: 600,
-    color: "#fff",
-    background: "#111827",
-    border: "none",
-    borderRadius: 6,
-    cursor: "pointer",
-    marginTop: 8,
-  },
-  errorBox: {
-    background: "#fee2e2",
-    color: "#991b1b",
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 16,
-  },
-};

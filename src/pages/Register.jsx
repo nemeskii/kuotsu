@@ -1,7 +1,29 @@
 import { useState } from "react";
 import api from "../api/axios";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import "../styles/theme.css";
+import "./Home.css";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+const fieldStyle = {
+  width: "100%",
+  padding: "10px 12px",
+  border: "1px solid #9A9280",
+  borderRadius: 6,
+  fontSize: 15,
+  background: "#F6F1E4",
+  color: "#2A2620",
+  fontFamily: "inherit",
+};
+
+const labelStyle = {
+  display: "block",
+  marginBottom: 6,
+  fontWeight: 600,
+  fontSize: 14,
+};
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -51,149 +73,234 @@ export default function Register() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>Become a Blood Donor</h1>
-      <p style={styles.subheading}>
-        Register below to join our community donor list.
-      </p>
+    <div className="site">
+      <div className="band-ink">
+        <Navbar tone="dark" />
+        <div className="section" style={{ paddingTop: 40, paddingBottom: 40 }}>
+          <div className="site-inner">
+            <div className="site-eyebrow" style={{ color: "#AB1D2E" }}>
+              Join the network
+            </div>
+            <h1 className="section-title" style={{ marginTop: 12 }}>
+              Become a blood donor
+            </h1>
+            <p
+              className="about-teaser-text"
+              style={{ marginTop: 12, maxWidth: 480 }}
+            >
+              Register below to join our community donor list. It takes two
+              minutes, and one donation can help up to three patients.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      {status.message && <div style={styles.success}>{status.message}</div>}
-      {status.error && <div style={styles.errorBox}>{status.error}</div>}
+      <div className="band-paper section">
+        <div className="site-inner" style={{ maxWidth: 560 }}>
+          {status.message && (
+            <div
+              style={{
+                background: "rgba(47, 107, 79, 0.12)",
+                border: "1px solid #2F6B4F",
+                color: "#2F6B4F",
+                padding: "12px 14px",
+                borderRadius: 6,
+                marginBottom: 20,
+                fontSize: 15,
+              }}
+            >
+              {status.message}
+            </div>
+          )}
+          {status.error && (
+            <div
+              style={{
+                background: "rgba(171, 29, 46, 0.1)",
+                border: "1px solid #AB1D2E",
+                color: "#AB1D2E",
+                padding: "12px 14px",
+                borderRadius: 6,
+                marginBottom: 20,
+                fontSize: 15,
+              }}
+            >
+              {status.error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          style={styles.input}
-          type="text"
-          name="full_name"
-          placeholder="Full Name"
-          value={form.full_name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          style={styles.input}
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          style={styles.input}
-          type="tel"
-          name="phone"
-          placeholder="Phone Number"
-          value={form.phone}
-          onChange={handleChange}
-          required
-        />
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: "grid", gap: 18 }}
+          >
+            <div>
+              <label style={labelStyle} htmlFor="full_name">
+                Full name
+              </label>
+              <input
+                style={fieldStyle}
+                id="full_name"
+                type="text"
+                name="full_name"
+                placeholder=""
+                value={form.full_name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-        <select
-          style={styles.input}
-          name="blood_group"
-          value={form.blood_group}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Blood Group</option>
-          {BLOOD_GROUPS.map((bg) => (
-            <option key={bg} value={bg}>
-              {bg}
-            </option>
-          ))}
-        </select>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+              <div>
+                <label style={labelStyle} htmlFor="email">
+                  Email
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder=""
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label style={labelStyle} htmlFor="phone">
+                  Phone number
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="phone"
+                  type="tel"
+                  name="phone"
+                  placeholder=""
+                  value={form.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
-        <input
-          style={styles.input}
-          type="number"
-          name="age"
-          placeholder="Age"
-          min="18"
-          max="65"
-          value={form.age}
-          onChange={handleChange}
-          required
-        />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 18 }}>
+              <div>
+                <label style={labelStyle} htmlFor="blood_group">
+                  Blood group
+                </label>
+                <select
+                  style={fieldStyle}
+                  id="blood_group"
+                  name="blood_group"
+                  value={form.blood_group}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select</option>
+                  {BLOOD_GROUPS.map((bg) => (
+                    <option key={bg} value={bg}>
+                      {bg}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-        <select
-          style={styles.input}
-          name="gender"
-          value={form.gender}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
+              <div>
+                <label style={labelStyle} htmlFor="age">
+                  Age
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="age"
+                  type="number"
+                  name="age"
+                  placeholder="18–65"
+                  min="18"
+                  max="65"
+                  value={form.age}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-        <input
-          style={styles.input}
-          type="text"
-          name="city"
-          placeholder="City"
-          value={form.city}
-          onChange={handleChange}
-          required
-        />
+              <div>
+                <label style={labelStyle} htmlFor="gender">
+                  Gender
+                </label>
+                <select
+                  style={fieldStyle}
+                  id="gender"
+                  name="gender"
+                  value={form.gender}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
 
-        <textarea
-          style={{ ...styles.input, height: 80 }}
-          name="address"
-          placeholder="Address (optional)"
-          value={form.address}
-          onChange={handleChange}
-        />
+            <div>
+              <label style={labelStyle} htmlFor="city">
+                City
+              </label>
+              <select
+                  style={fieldStyle}
+                  id="city"
+                  name="city"
+                  value={form.city}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="Select">Select</option>
+                      <option value="Chumoukedima">Chumoukedima</option>
+                      <option value="Dimapur">Dimapur</option>
+                      <option value="Kiphire">Kiphire</option>
+                      <option value="Kohima">Kohima</option>
+                      <option value="Longleng">Longleng</option>
+                      <option value="Meluri">Meluri</option>
+                      <option value="Mokokchung">Mokokchung</option>
+                      <option value="Mon">Mon</option>
+                      <option value="Niuland">Niuland</option>
+                      <option value="Noklak">Noklak</option>
+                      <option value="Peren">Peren</option>
+                      <option value="Phek">Phek</option>
+                      <option value="Shamator">Shamator</option>
+                      <option value="Tuensang">Tuensang</option>
+                      <option value="Tseminyü">Tseminyü</option>
+                      <option value="Wokha">Wokha</option>
+                      <option value="Zhunheboto">Zhunheboto</option>
+                </select>
+              </div>
 
-        <button style={styles.button} type="submit" disabled={status.loading}>
-          {status.loading ? "Submitting..." : "Register as Donor"}
-        </button>
-      </form>
+            <div>
+              <label style={labelStyle} htmlFor="address">
+                Address <span style={{ fontWeight: 400, color: "#9A9280" }}>(optional)</span>
+              </label>
+              <textarea
+                style={{ ...fieldStyle, height: 90, resize: "vertical" }}
+                id="address"
+                name="address"
+                placeholder=""
+                value={form.address}
+                onChange={handleChange}
+              />
+            </div>
+
+            <button
+              className="btn btn-primary"
+              type="submit"
+              disabled={status.loading}
+              style={{ justifySelf: "start", marginTop: 8 }}
+            >
+              {status.loading ? "Submitting…" : "Register as donor"}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: 520,
-    margin: "40px auto",
-    padding: "24px 32px",
-    fontFamily: "system-ui, sans-serif",
-  },
-  heading: { color: "#b91c1c", marginBottom: 4, fontSize: 28, lineHeight: 1.3 },
-  subheading: { color: "#555", marginBottom: 20 },
-  form: { display: "flex", flexDirection: "column", gap: 12 },
-  input: {
-    padding: "10px 12px",
-    fontSize: 15,
-    border: "1px solid #ccc",
-    borderRadius: 6,
-  },
-  button: {
-    padding: "12px",
-    fontSize: 16,
-    fontWeight: 600,
-    color: "#fff",
-    background: "#b91c1c",
-    border: "none",
-    borderRadius: 6,
-    cursor: "pointer",
-    marginTop: 8,
-  },
-  success: {
-    background: "#dcfce7",
-    color: "#166534",
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 16,
-  },
-  errorBox: {
-    background: "#fee2e2",
-    color: "#991b1b",
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 16,
-  },
-};
