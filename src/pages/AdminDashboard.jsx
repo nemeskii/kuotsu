@@ -1,34 +1,34 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import '../styles/theme.css';
-import './AdminDashboard.css';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
+import "../styles/theme.css";
+import "./AdminDashboard.css";
 
-const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 export default function AdminDashboard() {
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [filterBloodGroup, setFilterBloodGroup] = useState('');
+  const [error, setError] = useState("");
+  const [filterBloodGroup, setFilterBloodGroup] = useState("");
   const [donations, setDonations] = useState([]);
   const [donationsLoading, setDonationsLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchDonors = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
-      const res = await api.get('/admin/donors', {
+      const res = await api.get("/admin/donors", {
         params: filterBloodGroup ? { blood_group: filterBloodGroup } : {},
       });
       setDonors(res.data.data);
     } catch (err) {
       if (err.response?.status === 401) {
-        localStorage.removeItem('admin_token');
-        navigate('/admin/login');
+        localStorage.removeItem("admin_token");
+        navigate("/admin/login");
       } else {
-        setError('Failed to load donors');
+        setError("Failed to load donors");
       }
     } finally {
       setLoading(false);
@@ -38,8 +38,8 @@ export default function AdminDashboard() {
   const fetchPendingDonations = async () => {
     setDonationsLoading(true);
     try {
-      const res = await api.get('/admin/donations', {
-        params: { status: 'pending' },
+      const res = await api.get("/admin/donations", {
+        params: { status: "pending" },
       });
       setDonations(res.data);
     } catch (err) {
@@ -60,20 +60,22 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/admin/logout');
+      await api.post("/admin/logout");
     } catch (e) {
       // ignore
     }
-    localStorage.removeItem('admin_token');
-    navigate('/admin/login');
+    localStorage.removeItem("admin_token");
+    navigate("/admin/login");
   };
 
   const toggleAvailable = async (donor) => {
     try {
-      await api.put(`/admin/donors/${donor.id}`, { available: !donor.available });
+      await api.put(`/admin/donors/${donor.id}`, {
+        available: !donor.available,
+      });
       fetchDonors();
     } catch (e) {
-      alert('Failed to update donor');
+      alert("Failed to update donor");
     }
   };
 
@@ -83,7 +85,7 @@ export default function AdminDashboard() {
       await api.delete(`/admin/donors/${donor.id}`);
       fetchDonors();
     } catch (e) {
-      alert('Failed to delete donor');
+      alert("Failed to delete donor");
     }
   };
 
@@ -93,7 +95,7 @@ export default function AdminDashboard() {
       fetchPendingDonations();
       fetchDonors();
     } catch (e) {
-      alert('Failed to update donation');
+      alert("Failed to update donation");
     }
   };
 
@@ -102,7 +104,11 @@ export default function AdminDashboard() {
       <div className="admin-dash-header">
         <div className="admin-dash-header-inner">
           <div>
-            <span className="site-mark admin-dash-mark">
+            <span
+              className="site-mark admin-dash-mark"
+              onClick={() => navigate("/")}
+              style={{ cursor: "pointer" }}
+            >
               COMMUNITY<span>BLOOD</span>
             </span>
             <div className="site-eyebrow admin-dash-eyebrow">Admin panel</div>
@@ -118,7 +124,7 @@ export default function AdminDashboard() {
           <h1 className="admin-dash-heading">Pending donations</h1>
           <p className="admin-dash-sub">
             {donationsLoading
-              ? 'Loading…'
+              ? "Loading…"
               : `${donations.length} awaiting review`}
           </p>
         </div>
@@ -154,9 +160,9 @@ export default function AdminDashboard() {
                 donations.map((d) => (
                   <tr key={d.id}>
                     <td className="admin-dash-name">
-                      {d.donor?.full_name || '—'}
+                      {d.donor?.full_name || "—"}
                       {d.donor?.phone && (
-                        <div style={{ fontSize: 13, color: '#9A9280' }}>
+                        <div style={{ fontSize: 13, color: "#9A9280" }}>
                           {d.donor.phone}
                         </div>
                       )}
@@ -166,17 +172,17 @@ export default function AdminDashboard() {
                     </td>
                     <td>{d.units}</td>
                     <td>{d.donation_date}</td>
-                    <td>{d.location || '—'}</td>
+                    <td>{d.location || "—"}</td>
                     <td className="admin-dash-actions">
                       <button
                         className="admin-dash-btn"
-                        onClick={() => reviewDonation(d, 'completed')}
+                        onClick={() => reviewDonation(d, "completed")}
                       >
                         Approve
                       </button>
                       <button
                         className="admin-dash-btn admin-dash-btn--danger"
-                        onClick={() => reviewDonation(d, 'cancelled')}
+                        onClick={() => reviewDonation(d, "cancelled")}
                       >
                         Reject
                       </button>
@@ -191,8 +197,8 @@ export default function AdminDashboard() {
           <h1 className="admin-dash-heading">Donor dashboard</h1>
           <p className="admin-dash-sub">
             {loading
-              ? 'Loading donors…'
-              : `${donors.length} donor${donors.length === 1 ? '' : 's'} listed`}
+              ? "Loading donors…"
+              : `${donors.length} donor${donors.length === 1 ? "" : "s"} listed`}
           </p>
         </div>
 
@@ -252,17 +258,19 @@ export default function AdminDashboard() {
                   <tr key={donor.id}>
                     <td className="admin-dash-name">{donor.full_name}</td>
                     <td>
-                      <span className="admin-dash-badge">{donor.blood_group}</span>
+                      <span className="admin-dash-badge">
+                        {donor.blood_group}
+                      </span>
                     </td>
                     <td>{donor.phone}</td>
                     <td>{donor.city}</td>
                     <td>
                       <span
                         className={`admin-dash-status${
-                          donor.available ? ' is-available' : ''
+                          donor.available ? " is-available" : ""
                         }`}
                       >
-                        {donor.available ? 'Available' : 'Unavailable'}
+                        {donor.available ? "Available" : "Unavailable"}
                       </span>
                     </td>
                     <td className="admin-dash-actions">

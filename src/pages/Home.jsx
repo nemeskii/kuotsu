@@ -44,6 +44,9 @@ function getStatusText(level, units) {
   return `${levelLabel[level]} — ${units} ${unitWord}`;
 }
 
+// photoSeed drives the placeholder image for each drive card — swap
+// PLACEHOLDER_IMAGE below for a real upload path once you have one
+// (e.g. "/images/drives/nmh.jpg") and this still works the same way.
 const upcomingDrives = [
   {
     day: "12",
@@ -51,6 +54,7 @@ const upcomingDrives = [
     name: "NMH Blood Drive",
     location: "Kohima, Nagaland Medical College Auditorium",
     time: "9:00 AM – 3:00 PM",
+    photoSeed: "kuotsu-drive-nmh",
   },
   {
     day: "19",
@@ -58,6 +62,7 @@ const upcomingDrives = [
     name: "Naga Hospital Blood Drive",
     location: "Naga Hospital, OPD Lobby",
     time: "10:00 AM – 2:00 PM",
+    photoSeed: "kuotsu-drive-naga-hospital",
   },
   {
     day: "02",
@@ -65,6 +70,24 @@ const upcomingDrives = [
     name: "Kohima Civil Hospital Drive",
     location: "Civil Hospital, OPD Block",
     time: "8:30 AM – 1:00 PM",
+    photoSeed: "kuotsu-drive-civil-hospital",
+  },
+];
+
+const placeholderPhoto = (seed, w, h) =>
+  `https://picsum.photos/seed/${seed}/${w}/${h}`;
+
+// Auto-sliding photo strip next to the hero donor card. Swap the
+// picsum entries for real uploads (e.g. "/drive-1.jpg") as you get them.
+const heroGallery = [
+  { src: "/photo.jpeg", caption: "Kohima, Nagaland" },
+  {
+    src: placeholderPhoto("kuotsu-hero-2", 320, 400),
+    caption: "Community Blood",
+  },
+  {
+    src: placeholderPhoto("kuotsu-hero-3", 320, 400),
+    caption: "Every donation counts",
   },
 ];
 
@@ -76,6 +99,14 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [heroPhotoIndex, setHeroPhotoIndex] = useState(0);
+
+  useEffect(() => {
+    const galleryInterval = setInterval(() => {
+      setHeroPhotoIndex((i) => (i + 1) % heroGallery.length);
+    }, 3500);
+    return () => clearInterval(galleryInterval);
+  }, []);
 
   const fetchInventory = useCallback(async () => {
     try {
@@ -127,7 +158,10 @@ export default function Home() {
   const activeSlide = bloodTypes[slideIndex] ?? bloodTypes[0];
 
   const goToSlide = useCallback((index) => {
-    setSlideIndex(((index % BLOOD_TYPE_ORDER.length) + BLOOD_TYPE_ORDER.length) % BLOOD_TYPE_ORDER.length);
+    setSlideIndex(
+      ((index % BLOOD_TYPE_ORDER.length) + BLOOD_TYPE_ORDER.length) %
+        BLOOD_TYPE_ORDER.length,
+    );
   }, []);
 
   const handlePrevSlide = () => goToSlide(slideIndex - 1);
@@ -163,66 +197,99 @@ export default function Home() {
                 How it works
               </Link>
             </div>
+            <div className="hero-trust-strip">
+              <span>
+                <strong>120+</strong> donors
+              </span>
+              <span className="hero-trust-divider" aria-hidden="true" />
+              <span>
+                <strong>3</strong> hospitals
+              </span>
+              <span className="hero-trust-divider" aria-hidden="true" />
+              <span>
+                <strong>24/7</strong> request line
+              </span>
+            </div>
           </div>
           <div className="hero-visual">
-            <div
-              className="donor-card"
-              key={activeSlide.type}
-              role="group"
-              aria-label={`Inventory status for blood type ${activeSlide.type}`}
-            >
-              <button
-                type="button"
-                className="donor-card-nav donor-card-nav--prev"
-                onClick={handlePrevSlide}
-                aria-label="Previous blood type"
-              >
-                ‹
-              </button>
-              <button
-                type="button"
-                className="donor-card-nav donor-card-nav--next"
-                onClick={handleNextSlide}
-                aria-label="Next blood type"
-              >
-                ›
-              </button>
-
-              <div className="donor-card-label">Live Inventory</div>
+            <div className="hero-visual-group">
               <div
-                className="donor-card-stamp"
-                style={{ color: levelColor[activeSlide.level] }}
+                className="photo-plate photo-plate--hero-carousel"
+                aria-hidden="true"
               >
-                {activeSlide.type}
-              </div>
-              <div className="donor-card-row">
-                <span>Status</span>
-                <span style={{ color: levelColor[activeSlide.level] }}>
-                  {loading
-                    ? "Loading…"
-                    : getStatusText(activeSlide.level, activeSlide.units)}
+                <img
+                  key={heroPhotoIndex}
+                  src={heroGallery[heroPhotoIndex].src}
+                  alt=""
+                  className="hero-photo-fade"
+                />
+                <span className="photo-plate-caption">
+                  {heroGallery[heroPhotoIndex].caption}
                 </span>
               </div>
-              <div className="donor-card-dots">
-                {bloodTypes.map((b, i) => (
-                  <button
-                    type="button"
-                    key={b.type}
-                    className={`donor-card-dot${i === slideIndex ? " donor-card-dot--active" : ""}`}
-                    onClick={() => goToSlide(i)}
-                    aria-label={`Show ${b.type}`}
-                    aria-current={i === slideIndex}
-                  />
-                ))}
+              <div
+                className="donor-card"
+                key={activeSlide.type}
+                role="group"
+                aria-label={`Inventory status for blood type ${activeSlide.type}`}
+              >
+                <button
+                  type="button"
+                  className="donor-card-nav donor-card-nav--prev"
+                  onClick={handlePrevSlide}
+                  aria-label="Previous blood type"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  className="donor-card-nav donor-card-nav--next"
+                  onClick={handleNextSlide}
+                  aria-label="Next blood type"
+                >
+                  ›
+                </button>
+
+                <div className="donor-card-label">Live Inventory</div>
+                <div
+                  className="donor-card-stamp"
+                  style={{ color: levelColor[activeSlide.level] }}
+                >
+                  {activeSlide.type}
+                </div>
+                <div className="donor-card-row">
+                  <span>Status</span>
+                  <span style={{ color: levelColor[activeSlide.level] }}>
+                    {loading
+                      ? "Loading…"
+                      : getStatusText(activeSlide.level, activeSlide.units)}
+                  </span>
+                </div>
+                <div className="donor-card-dots">
+                  {bloodTypes.map((b, i) => (
+                    <button
+                      type="button"
+                      key={b.type}
+                      className={`donor-card-dot${i === slideIndex ? " donor-card-dot--active" : ""}`}
+                      onClick={() => goToSlide(i)}
+                      aria-label={`Show ${b.type}`}
+                      aria-current={i === slideIndex}
+                    />
+                  ))}
+                </div>
+                <div className="donor-card-serial">No. 000–CB–2026</div>
               </div>
-              <div className="donor-card-serial">No. 000–CB–2026</div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="pulse-wrap">
-        <svg className="pulse-svg" viewBox="0 0 900 44" preserveAspectRatio="none">
+        <svg
+          className="pulse-svg"
+          viewBox="0 0 900 44"
+          preserveAspectRatio="none"
+        >
           <path
             className="pulse-path pulse-path--base"
             d="M0 22 H320 L345 22 L360 5 L378 39 L396 22 L420 22 H580 L605 22 L620 5 L638 39 L656 22 L680 22 H900"
@@ -249,14 +316,29 @@ export default function Home() {
       <div className="band-paper section" id="about">
         <div className="about-teaser">
           <div className="section-kicker">About this network</div>
-          <h2 className="section-title">Not a one-off drive. A standing network.</h2>
-          <p className="about-teaser-text about-teaser-text--details">
-  Community Blood connects donors and patients directly, so help
-  doesn't wait for the next scheduled drive to arrive.
-</p>
-          <Link to="/about" className="about-teaser-link">
-            Read our story →
-          </Link>
+          <h2 className="section-title">
+            Not a one-off drive. A standing network.
+          </h2>
+          <div className="about-teaser-row">
+            <div className="photo-plate photo-plate--about">
+              <img
+                src="/photo.jpg"
+                alt="Donors and volunteers at a Community Blood drive"
+              />
+              <span className="photo-plate-caption">
+                Donors at a recent drive
+              </span>
+            </div>
+            <div className="about-teaser-copy">
+              <p className="about-teaser-text about-teaser-text--details">
+                Community Blood connects donors and patients directly, so help
+                doesn't wait for the next scheduled drive to arrive.
+              </p>
+              <Link to="/about" className="about-teaser-link">
+                Read our story →
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -267,7 +349,7 @@ export default function Home() {
             <div className="stat-label">Lives helped per donation</div>
           </div>
           <div>
-            <span className="stat-num">56</span>
+            <span className="stat-num">90</span>
             <div className="stat-label">Days between donations</div>
           </div>
           <div>
@@ -344,6 +426,9 @@ export default function Home() {
           <div className="drives-list" style={{ marginTop: 36 }}>
             {upcomingDrives.map((d) => (
               <div className="drive-card" key={`${d.day}-${d.month}-${d.name}`}>
+                <div className="drive-photo">
+                  <img src={placeholderPhoto(d.photoSeed, 160, 160)} alt="" />
+                </div>
                 <div className="drive-date">
                   <span className="drive-date-day">{d.day}</span>
                   <span className="drive-date-month">{d.month}</span>
@@ -362,13 +447,17 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="band-blood cta-band">
+      <div className="band-blood cta-band cta-band--photo">
         <h2 className="cta-heading">
           Be someone's
           <br />
           <em>reason to live.</em>
         </h2>
-        <Link to="/register" className="btn btn-ghost-dark" style={{ borderColor: "#F6F1E4", color: "#F6F1E4" }}>
+        <Link
+          to="/register"
+          className="btn btn-ghost-dark"
+          style={{ borderColor: "#F6F1E4", color: "#F6F1E4" }}
+        >
           Register as a donor
         </Link>
       </div>

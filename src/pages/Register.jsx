@@ -24,6 +24,17 @@ const labelStyle = {
   fontSize: 14,
 };
 
+// Donor must be at least 18 years old; cap the earliest allowed year too.
+const today = new Date();
+const MAX_DOB = new Date(
+  today.getFullYear() - 18,
+  today.getMonth(),
+  today.getDate(),
+)
+  .toISOString()
+  .split("T")[0];
+const MIN_DOB = "1900-01-01";
+
 export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -32,7 +43,10 @@ export default function Register() {
     password: "",
     phone: "",
     date_of_birth: "",
+    government_id: "",
+    password_confirmation: "",
   });
+  const [govIdFile, setGovIdFile] = useState(null);
   const [status, setStatus] = useState({
     loading: false,
     message: "",
@@ -40,15 +54,60 @@ export default function Register() {
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "government_id") {
+      // digits only, capped at 12
+      const digitsOnly = value.replace(/\D/g, "").slice(0, 12);
+      setForm({ ...form, government_id: digitsOnly });
+      return;
+    }
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    setGovIdFile(e.target.files[0] || null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (form.password !== form.password_confirmation) {
+      setStatus({
+        loading: false,
+        message: "",
+        error: "Passwords do not match.",
+      });
+      return;
+    }
+    if (form.government_id.length !== 12) {
+      setStatus({
+        loading: false,
+        message: "",
+        error: "Government ID must be exactly 12 digits.",
+      });
+      return;
+    }
+    if (!govIdFile) {
+      setStatus({
+        loading: false,
+        message: "",
+        error: "Please upload a copy of your government ID.",
+      });
+      return;
+    }
+
     setStatus({ loading: true, message: "", error: "" });
 
     try {
-      const res = await api.post("/register", form);
+      const payload = new FormData();
+      Object.entries(form).forEach(([key, value]) =>
+        payload.append(key, value),
+      );
+      payload.append("government_id_document", govIdFile);
+
+      const res = await api.post("/register", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       localStorage.setItem("donor_token", res.data.token);
       setStatus({ loading: false, message: res.data.message, error: "" });
       setTimeout(() => navigate("/dashboard"), 800);
@@ -77,8 +136,8 @@ export default function Register() {
               className="about-teaser-text about-teaser-text--hero"
               style={{ marginTop: 12, maxWidth: 480 }}
             >
-              Step 1 of 2. Register an account, then finish your donor
-              profile in the next step.
+              Step 1 of 2. Register an account, then finish your donor profile
+              in the next step.
             </p>
           </div>
         </div>
@@ -133,7 +192,13 @@ export default function Register() {
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 18,
+              }}
+            >
               <div>
                 <label style={labelStyle} htmlFor="email">
                   Email
@@ -175,10 +240,53 @@ export default function Register() {
                 name="date_of_birth"
                 value={form.date_of_birth}
                 onChange={handleChange}
+                min={MIN_DOB}
+                max={MAX_DOB}
                 required
               />
               <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
                 You must be 18 or older to register as a donor.
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle} htmlFor="government_id">
+                Government ID number
+              </label>
+              <input
+                style={fieldStyle}
+                id="government_id"
+                type="text"
+                name="government_id"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="12-digit ID number"
+                value={form.government_id}
+                onChange={handleChange}
+                minLength={12}
+                maxLength={12}
+                required
+              />
+              <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
+                {form.government_id.length}/12 digits entered
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle} htmlFor="government_id_document">
+                Upload government ID (front side)
+              </label>
+              <input
+                style={fieldStyle}
+                id="government_id_document"
+                type="file"
+                name="government_id_document"
+                accept="image/*,.pdf"
+                onChange={handleFileChange}
+                required
+              />
+              <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
+                JPG, PNG, or PDF. Used only to verify your identity.
               </div>
             </div>
 
@@ -192,6 +300,23 @@ export default function Register() {
                 type="password"
                 name="password"
                 value={form.password}
+                onChange={handleChange}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle} htmlFor="password_confirmation">
+                Confirm password
+              </label>
+              <input
+                style={fieldStyle}
+                id="password_confirmation"
+                type="password"
+                name="password_confirmation"
+                value={form.password_confirmation}
                 onChange={handleChange}
                 autoComplete="new-password"
                 minLength={8}

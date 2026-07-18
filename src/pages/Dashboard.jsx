@@ -89,9 +89,7 @@ export default function Dashboard() {
       setForm({ blood_group: "", units: 1, donation_date: "", location: "" });
       fetchDonations();
     } catch (err) {
-      setFormMessage(
-        err.response?.data?.message || "Failed to log donation",
-      );
+      setFormMessage(err.response?.data?.message || "Failed to log donation");
     } finally {
       setSubmitting(false);
     }
@@ -114,9 +112,13 @@ export default function Dashboard() {
       <div className="admin-dash-header">
         <div className="admin-dash-header-inner">
           <div>
-            <span className="site-mark admin-dash-mark">
+            <Link
+              to="/"
+              className="site-mark admin-dash-mark"
+              style={{ textDecoration: "none" }}
+            >
               COMMUNITY<span>BLOOD</span>
-            </span>
+            </Link>
             <div className="site-eyebrow admin-dash-eyebrow">My donations</div>
           </div>
           <button className="admin-dash-logout" onClick={handleLogout}>
@@ -220,8 +222,8 @@ export default function Dashboard() {
               Want to donate blood?
             </h2>
             <p style={{ margin: "0 0 18px", color: "#5A5344", fontSize: 15 }}>
-              Register as a donor to join our network. It takes about a
-              minute, and one donation can help up to three patients.
+              Register as a donor to join our network. It takes about a minute,
+              and one donation can help up to three patients.
             </p>
             <Link to="/complete-profile" className="btn btn-primary">
               Register as donor
@@ -234,8 +236,8 @@ export default function Dashboard() {
             <div className="admin-dash-titlebar">
               <h1 className="admin-dash-heading">Log a donation</h1>
               <p className="admin-dash-sub">
-                Record a donation you've made. An admin will verify it, and
-                your availability updates automatically once approved.
+                Record a donation you've made. An admin will verify it, and your
+                availability updates automatically once approved.
               </p>
             </div>
 
@@ -384,9 +386,7 @@ export default function Dashboard() {
                         <td>{d.units}</td>
                         <td>{d.location || "—"}</td>
                         <td>
-                          <span className="admin-dash-status">
-                            {d.status}
-                          </span>
+                          <span className="admin-dash-status">{d.status}</span>
                         </td>
                       </tr>
                     ))}
