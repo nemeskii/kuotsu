@@ -32,9 +32,9 @@ export default function DonorLogin() {
   return (
     <div className="donor-login-page">
       <div className="donor-login-card">
-        <span className="site-mark donor-login-mark">
+        <Link to="/" className="site-mark donor-login-mark">
           COMMUNITY<span>BLOOD</span>
-        </span>
+        </Link>
 
         <div className="site-eyebrow donor-login-eyebrow">Donor access</div>
         <h1 className="donor-login-heading">Donor login</h1>
@@ -88,7 +88,7 @@ export default function DonorLogin() {
           to="/register"
           className="btn btn-ghost-light donor-login-register"
         >
-          Register
+          Register as a donor
         </Link>
 
         <Link to="/" className="donor-login-back">

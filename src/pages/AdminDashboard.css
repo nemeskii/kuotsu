@@ -1,296 +1,160 @@
-/* ---- Admin dashboard ---- */
-.admin-dash-page {
+/* ---- Admin login ---- */
+.admin-login-page {
   min-height: 100vh;
-  background: var(--paper);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(
+      560px 360px at 50% -10%,
+      rgba(171, 29, 46, 0.22),
+      transparent 70%
+    ),
+    var(--ink);
   cursor: default;
   user-select: none;
 }
 
-.admin-dash-page a,
-.admin-dash-page button,
-.admin-dash-page select,
-.admin-dash-page label {
+.admin-login-page a,
+.admin-login-page button,
+.admin-login-page label {
   cursor: pointer;
 }
 
-.admin-dash-page input {
+.admin-login-page input {
   cursor: text;
 }
 
-.admin-dash-page button:disabled {
+.admin-login-page button:disabled {
   cursor: not-allowed;
 }
 
-.admin-dash-header {
-  background: var(--ink);
-  color: var(--bone);
-}
-
-.admin-dash-header-inner {
+.admin-login-card {
   width: 100%;
-  margin: 0;
-  padding: 20px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  box-sizing: border-box;
+  max-width: 440px;
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 56px 48px 44px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
 }
 
-.admin-dash-mark {
+.admin-login-mark {
   display: block;
-  margin-bottom: 6px;
-  margin-right: auto;
+  margin-bottom: 36px;
   cursor: default;
   user-select: none;
+  font-size: clamp(24px, 7vw, 32px) !important;
+  white-space: normal;
+  line-height: 1.15;
 }
 
-.admin-dash-eyebrow {
+.admin-login-eyebrow {
   color: var(--blood);
-  cursor: default;
-  user-select: none;
+  font-size: 13px;
 }
 
-.admin-dash-logout {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bone);
-  background: transparent;
-  border: 1px solid rgba(246, 241, 228, 0.4);
-  border-radius: 3px;
-  padding: 9px 16px;
-  cursor: pointer;
-  margin-left: auto;
-  transition:
-    opacity 0.15s ease,
-    background 0.15s ease,
-    color 0.15s ease;
-  white-space: nowrap;
-}
-
-.admin-dash-logout:hover {
-  background: var(--bone);
-  color: var(--ink);
-  border-color: var(--bone);
-}
-
-.admin-dash-body {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 40px 24px 80px;
-}
-
-.admin-dash-titlebar {
-  margin-bottom: 28px;
-}
-
-.admin-dash-heading {
+.admin-login-heading {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(26px, 3.6vw, 36px);
+  font-size: 36px;
   letter-spacing: -0.01em;
+  margin: 14px 0 12px;
   color: var(--ink);
-  margin: 0 0 6px;
 }
 
-.admin-dash-sub {
+.admin-login-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 36px;
+  max-width: 34ch;
+}
+
+.admin-login-error {
+  background: rgba(171, 29, 46, 0.1);
+  border: 1px solid rgba(171, 29, 46, 0.3);
+  color: var(--blood-deep);
+  font-size: 14.5px;
+  padding: 14px 16px;
+  border-radius: 3px;
+  margin-bottom: 26px;
+}
+
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.admin-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.admin-login-label {
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
-  margin: 0;
-}
-
-.admin-dash-toolbar {
-  display: flex;
-  margin-bottom: 22px;
-}
-
-.admin-dash-filter {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.admin-dash-filter-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
 
-.admin-dash-select {
+.admin-login-input {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16.5px;
   color: var(--ink);
-  background: var(--paper);
-  border: 1px solid var(--paper-line);
-  border-radius: 3px;
-  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--paper-line);
+  padding: 11px 2px;
   outline: none;
-  cursor: pointer;
   transition: border-color 0.15s ease;
 }
 
-.admin-dash-select:focus {
+.admin-login-input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.55;
+}
+
+.admin-login-input:focus {
   border-color: var(--blood);
 }
 
-.admin-dash-error {
-  background: rgba(171, 29, 46, 0.1);
-  border: 1px solid rgba(171, 29, 46, 0.3);
-  color: var(--blood-deep);
-  font-size: 13.5px;
-  padding: 12px 14px;
-  border-radius: 3px;
-  margin-bottom: 20px;
-}
-
-.admin-dash-table-wrap {
-  background: #fff;
-  border: 1px solid var(--paper-line);
-  border-radius: 4px;
-  overflow-x: auto;
-}
-
-.admin-dash-table {
+.admin-login-submit {
   width: 100%;
-  border-collapse: collapse;
-  min-width: 640px;
+  margin-top: 12px;
+  padding: 17px 24px;
 }
 
-.admin-dash-table thead th {
-  text-align: left;
+.admin-login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.admin-login-back {
+  display: block;
+  text-align: center;
+  margin-top: 34px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  padding: 14px 18px;
-  border-bottom: 1.5px solid var(--paper-line);
-  white-space: nowrap;
-}
-
-.admin-dash-th-actions {
-  text-align: right;
-}
-
-.admin-dash-table tbody td {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--paper-line);
-  font-size: 14px;
-  color: var(--ink);
-  vertical-align: middle;
-}
-
-.admin-dash-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.admin-dash-table tbody tr:hover {
-  background: rgba(23, 20, 15, 0.02);
-}
-
-.admin-dash-name {
-  font-weight: 600;
-}
-
-.admin-dash-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--blood-deep);
-  background: rgba(171, 29, 46, 0.08);
-  border: 1px solid rgba(171, 29, 46, 0.2);
-  border-radius: 3px;
-  padding: 3px 8px;
-}
-
-.admin-dash-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--ink-soft);
-}
-
-.admin-dash-status::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--ink-soft);
-  opacity: 0.5;
-}
-
-.admin-dash-status.is-available {
-  color: var(--vital);
-}
-
-.admin-dash-status.is-available::before {
-  background: var(--vital);
-  opacity: 1;
-}
-
-.admin-dash-actions {
-  text-align: right;
-  white-space: nowrap;
-}
-
-.admin-dash-btn {
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink);
-  background: transparent;
-  border: 1px solid var(--paper-line);
-  border-radius: 3px;
-  padding: 7px 12px;
-  margin-left: 8px;
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease,
-    color 0.15s ease;
-}
-
-.admin-dash-btn:hover {
-  border-color: var(--ink);
-}
-
-.admin-dash-btn--danger {
-  color: var(--blood-deep);
-  border-color: rgba(171, 29, 46, 0.3);
-}
-
-.admin-dash-btn--danger:hover {
-  background: var(--blood);
-  color: var(--bone);
-  border-color: var(--blood);
-}
-
-.admin-dash-empty {
-  text-align: center;
-  padding: 40px 18px !important;
   color: var(--ink-soft);
-  font-size: 14px;
+  text-decoration: none;
 }
 
-@media (max-width: 640px) {
-  .admin-dash-header-inner {
-    flex-wrap: wrap;
-  }
+.admin-login-back:hover {
+  color: var(--blood);
+}
 
-  .admin-dash-body {
-    padding: 32px 16px 60px;
+@media (max-width: 420px) {
+  .admin-login-card {
+    padding: 40px 28px 32px;
   }
 }
