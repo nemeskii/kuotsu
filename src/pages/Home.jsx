@@ -80,15 +80,10 @@ const placeholderPhoto = (seed, w, h) =>
 // Auto-sliding photo strip next to the hero donor card. Swap the
 // picsum entries for real uploads (e.g. "/drive-1.jpg") as you get them.
 const heroGallery = [
-  { src: "/photo.jpeg", caption: "Kohima, Nagaland" },
-  {
-    src: placeholderPhoto("kuotsu-hero-2", 320, 400),
-    caption: "Community Blood",
-  },
-  {
-    src: placeholderPhoto("kuotsu-hero-3", 320, 400),
-    caption: "Every donation counts",
-  },
+  { src: "/photo.jpeg.jpg", caption: "Kohima, Nagaland" },
+  { src: "/download.jpg", caption: "pew" },
+  { src: "/2.jpg", caption: "pew" },
+  { src: "/3.jpg", caption: "pew" },
 ];
 
 export default function Home() {
@@ -214,20 +209,6 @@ export default function Home() {
           <div className="hero-visual">
             <div className="hero-visual-group">
               <div
-                className="photo-plate photo-plate--hero-carousel"
-                aria-hidden="true"
-              >
-                <img
-                  key={heroPhotoIndex}
-                  src={heroGallery[heroPhotoIndex].src}
-                  alt=""
-                  className="hero-photo-fade"
-                />
-                <span className="photo-plate-caption">
-                  {heroGallery[heroPhotoIndex].caption}
-                </span>
-              </div>
-              <div
                 className="donor-card"
                 key={activeSlide.type}
                 role="group"
@@ -278,6 +259,17 @@ export default function Home() {
                   ))}
                 </div>
                 <div className="donor-card-serial">No. 000–CB–2026</div>
+              </div>
+              <div className="hero-photo-feature" aria-hidden="true">
+                <img
+                  key={heroPhotoIndex}
+                  src={heroGallery[heroPhotoIndex].src}
+                  alt=""
+                  className="hero-photo-fade"
+                />
+                <span className="photo-plate-caption">
+                  {heroGallery[heroPhotoIndex].caption}
+                </span>
               </div>
             </div>
           </div>

@@ -152,14 +152,15 @@
 
 .featuredArt {
   height: 320px;
-  background: repeating-linear-gradient(
-    115deg,
-    var(--ink) 0px,
-    var(--ink) 40px,
-    #1a1a1a 40px,
-    #1a1a1a 80px
-  );
   position: relative;
+  overflow: hidden;
+}
+
+.featuredArt img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .featuredArt::after {
@@ -253,13 +254,14 @@
   width: 56px;
   height: 56px;
   border-radius: 4px;
-  background: repeating-linear-gradient(
-    115deg,
-    var(--crimson) 0px,
-    var(--crimson) 8px,
-    var(--ink) 8px,
-    var(--ink) 16px
-  );
+  overflow: hidden;
+}
+
+.sideThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .sideDate {
@@ -318,13 +320,19 @@
 .moreArt {
   height: 140px;
   margin-bottom: 16px;
-  background: repeating-linear-gradient(
-    115deg,
-    var(--amber) 0px,
-    var(--amber) 30px,
-    var(--ink) 30px,
-    var(--ink) 60px
-  );
+  overflow: hidden;
+  position: relative;
+}
+
+.moreArt img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .moreCategory {

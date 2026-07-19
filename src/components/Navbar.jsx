@@ -10,6 +10,7 @@ export default function Navbar({ tone = "dark" }) {
   const onAbout = location.pathname === "/about";
   const onHowItWorks = location.pathname === "/how-it-works";
   const onContact = location.pathname === "/contact";
+  const onNews = location.pathname === "/news";
 
   // Close the mobile menu whenever the route changes
   useEffect(() => {
@@ -56,6 +57,7 @@ export default function Navbar({ tone = "dark" }) {
             Contact
           </Link>
         </li>
+
         {isDonorLoggedIn ? (
           <li>
             <Link to="/dashboard">Dashboard</Link>
@@ -66,12 +68,6 @@ export default function Navbar({ tone = "dark" }) {
           </li>
         )}
       </ul>
-
-      {onHome && (
-        <Link to="/admin/login" className="site-admin-link">
-          Admin
-        </Link>
-      )}
 
       {/* Mobile hamburger toggle */}
       <button
@@ -123,6 +119,7 @@ export default function Navbar({ tone = "dark" }) {
               Contact
             </Link>
           </li>
+
           {isDonorLoggedIn ? (
             <li>
               <Link to="/dashboard">Dashboard</Link>
@@ -130,11 +127,6 @@ export default function Navbar({ tone = "dark" }) {
           ) : (
             <li>
               <Link to="/donor/login">Login</Link>
-            </li>
-          )}
-          {onHome && (
-            <li>
-              <Link to="/admin/login">Admin</Link>
             </li>
           )}
         </ul>

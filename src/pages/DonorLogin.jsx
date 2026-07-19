@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "../styles/theme.css";
-import "./AdminLogin.css";
+import "./DonorLogin.css";
 
 export default function DonorLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -30,29 +30,29 @@ export default function DonorLogin() {
   };
 
   return (
-    <div className="admin-login-page">
-      <div className="admin-login-card">
-        <span className="site-mark admin-login-mark">
+    <div className="donor-login-page">
+      <div className="donor-login-card">
+        <span className="site-mark donor-login-mark">
           COMMUNITY<span>BLOOD</span>
         </span>
 
-        <div className="site-eyebrow admin-login-eyebrow">Donor access</div>
-        <h1 className="admin-login-heading">Donor login</h1>
-        <p className="admin-login-sub">
+        <div className="site-eyebrow donor-login-eyebrow">Donor access</div>
+        <h1 className="donor-login-heading">Donor login</h1>
+        <p className="donor-login-sub">
           Sign in to view your donation history and log new donations.
         </p>
 
         {error && (
-          <div className="admin-login-error" role="alert">
+          <div className="donor-login-error" role="alert">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="admin-login-form" noValidate>
-          <label className="admin-login-field">
-            <span className="admin-login-label">Email</span>
+        <form onSubmit={handleSubmit} className="donor-login-form" noValidate>
+          <label className="donor-login-field">
+            <span className="donor-login-label">Email</span>
             <input
-              className="admin-login-input"
+              className="donor-login-input"
               type="email"
               name="email"
               value={form.email}
@@ -62,10 +62,10 @@ export default function DonorLogin() {
             />
           </label>
 
-          <label className="admin-login-field">
-            <span className="admin-login-label">Password</span>
+          <label className="donor-login-field">
+            <span className="donor-login-label">Password</span>
             <input
-              className="admin-login-input"
+              className="donor-login-input"
               type="password"
               name="password"
               value={form.password}
@@ -76,7 +76,7 @@ export default function DonorLogin() {
           </label>
 
           <button
-            className="btn btn-primary admin-login-submit"
+            className="btn btn-primary donor-login-submit"
             type="submit"
             disabled={loading}
           >
@@ -84,7 +84,14 @@ export default function DonorLogin() {
           </button>
         </form>
 
-        <Link to="/" className="admin-login-back">
+        <Link
+          to="/register"
+          className="btn btn-ghost-light donor-login-register"
+        >
+          Register
+        </Link>
+
+        <Link to="/" className="donor-login-back">
           ← Back to site
         </Link>
       </div>

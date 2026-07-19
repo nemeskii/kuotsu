@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
 import styles from "./News.module.css";
+import Navbar from "../components/Navbar";
+import "../styles/theme.css";
 
 function PulseTag({ label }) {
   return (
@@ -19,12 +20,21 @@ function PulseTag({ label }) {
   );
 }
 
+// Photos from /public — swap or add more here and everything below
+// will keep cycling through them automatically.
+const GALLERY = ["/1.jpg", "/2.jpg", "/3.jpg", "/download.jpg"];
+
+// Separate list for the "More Updates" cards — 3.jpg is excluded here
+// because its pale top crops awkwardly in this card's wide, short image box.
+const MORE_UPDATES_IMAGES = ["/1.jpg", "/2.jpg", "/download.jpg"];
+
 const FEATURED = {
   date: "8 Jul 2026",
   tag: "URGENT",
   title: "O- reserves hit a two-year low across three partner hospitals",
   excerpt:
     "City General, Riverside, and St. Anne's are all reporting critical shortages of O-negative. Here's what's driving the drop and where to give this week.",
+  image: GALLERY[0],
 };
 
 const SIDEBAR_STORIES = [
@@ -83,33 +93,7 @@ const MORE_UPDATES = [
 export default function News() {
   return (
     <div className={styles.page}>
-      <div className={styles.topbar}>
-        <div className={styles.mark}>
-          COMMUNITY<span>BLOOD</span>
-        </div>
-        <ul className={styles.nav}>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/news" className={styles.navActive}>
-              News
-            </Link>
-          </li>
-          <li>
-            <a href="/#about">About</a>
-          </li>
-          <li>
-            <a href="/#how-it-works">How It Works</a>
-          </li>
-          <li>
-            <a href="/#contact">Contact</a>
-          </li>
-        </ul>
-        <Link to="/admin/login" className={styles.adminLinkTop}>
-          Admin
-        </Link>
-      </div>
+      <Navbar tone="light" />
 
       <div className={styles.header}>
         <div className={styles.eyebrow}>Community Blood Donation Network</div>
@@ -133,7 +117,9 @@ export default function News() {
       <div className={styles.content}>
         <div className={styles.mainCol}>
           <button type="button" className={styles.featured}>
-            <div className={styles.featuredArt} aria-hidden="true" />
+            <div className={styles.featuredArt}>
+              <img src={FEATURED.image} alt="" />
+            </div>
             <div className={styles.featuredBody}>
               <PulseTag label={FEATURED.tag} />
               <div className={styles.featuredDate}>{FEATURED.date}</div>
@@ -146,7 +132,9 @@ export default function News() {
         <div className={styles.sideCol}>
           {SIDEBAR_STORIES.map((s, i) => (
             <button type="button" key={i} className={styles.sideItem}>
-              <div className={styles.sideThumb} aria-hidden="true" />
+              <div className={styles.sideThumb}>
+                <img src={GALLERY[i % GALLERY.length]} alt="" />
+              </div>
               <div>
                 <div className={styles.sideDate}>{s.date}</div>
                 <div className={styles.sideTitle}>{s.title}</div>
@@ -161,7 +149,12 @@ export default function News() {
         <div className={styles.moreGrid}>
           {MORE_UPDATES.map((u, i) => (
             <button type="button" key={i} className={styles.moreCard}>
-              <div className={styles.moreArt} aria-hidden="true" />
+              <div className={styles.moreArt}>
+                <img
+                  src={MORE_UPDATES_IMAGES[i % MORE_UPDATES_IMAGES.length]}
+                  alt=""
+                />
+              </div>
               <div className={styles.moreCategory}>{u.category}</div>
               <div className={styles.moreDate}>{u.date}</div>
               <h3 className={styles.moreCardTitle}>{u.title}</h3>
