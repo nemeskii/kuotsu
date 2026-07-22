@@ -540,3 +540,16 @@ body {
     justify-content: center;
   }
 }
+
+.site {
+  caret-color: transparent;
+}
+
+body {
+  caret-color: transparent;
+}
+
+input,
+textarea {
+  caret-color: auto;
+}

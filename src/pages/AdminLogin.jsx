@@ -32,9 +32,9 @@ export default function AdminLogin() {
   return (
     <div className="admin-login-page">
       <div className="admin-login-card">
-        <span className="site-mark admin-login-mark">
+        <Link to="/" className="site-mark admin-login-mark">
           COMMUNITY<span>BLOOD</span>
-        </span>
+        </Link>
 
         <div className="site-eyebrow admin-login-eyebrow">
           Restricted access
