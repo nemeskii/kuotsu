@@ -284,7 +284,10 @@
     gap: 28px;
   }
   .story-media { position: static; }
-  .story-image { aspect-ratio: 16 / 9; }
+  .story-image {
+    aspect-ratio: 4 / 5;
+    object-position: top center;
+  }
 }
 
 .testimonial-avatar,
