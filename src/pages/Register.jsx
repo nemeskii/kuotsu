@@ -53,6 +53,12 @@ export default function Register() {
     error: "",
   });
 
+  // --- OTP state ---
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpStatus, setOtpStatus] = useState({ loading: false, error: "" });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "government_id") {
@@ -61,6 +67,18 @@ export default function Register() {
       setForm({ ...form, government_id: digitsOnly });
       return;
     }
+    if (name === "phone") {
+      // digits only, capped at 10
+      const digitsOnly = value.replace(/\D/g, "").slice(0, 10);
+      setForm({ ...form, phone: digitsOnly });
+      return;
+    }
+    if (name === "email") {
+      // if they edit the email after verifying, reset verification
+      setEmailVerified(false);
+      setOtpSent(false);
+      setOtpCode("");
+    }
     setForm({ ...form, [name]: value });
   };
 
@@ -68,9 +86,63 @@ export default function Register() {
     setGovIdFile(e.target.files[0] || null);
   };
 
+  const handleSendOtp = async () => {
+    if (!form.email) {
+      setOtpStatus({ loading: false, error: "Enter your email first." });
+      return;
+    }
+    setOtpStatus({ loading: true, error: "" });
+    try {
+      await api.post("/otp/send", { email: form.email });
+      setOtpSent(true);
+      setOtpStatus({ loading: false, error: "" });
+    } catch (err) {
+      const errors = err.response?.data?.errors;
+      const msg = errors
+        ? Object.values(errors)[0][0]
+        : err.response?.data?.message || "Could not send code. Try again.";
+      setOtpStatus({ loading: false, error: msg });
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otpCode) {
+      setOtpStatus({
+        loading: false,
+        error: "Please enter the OTP sent to your mail.",
+      });
+      return;
+    }
+    if (otpCode.length !== 6) {
+      setOtpStatus({ loading: false, error: "Enter the 6-digit code." });
+      return;
+    }
+    setOtpStatus({ loading: true, error: "" });
+    try {
+      await api.post("/otp/verify", { email: form.email, code: otpCode });
+      setEmailVerified(true);
+      setOtpStatus({ loading: false, error: "" });
+    } catch (err) {
+      setOtpStatus({
+        loading: false,
+        error: err.response?.data?.message || "Invalid code. Try again.",
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!emailVerified) {
+      setStatus({
+        loading: false,
+        message: "",
+        error: otpSent
+          ? "Please enter the OTP sent to your mail."
+          : "Please verify your email before continuing.",
+      });
+      return;
+    }
     if (form.password !== form.password_confirmation) {
       setStatus({
         loading: false,
@@ -136,8 +208,8 @@ export default function Register() {
               className="about-teaser-text about-teaser-text--hero"
               style={{ marginTop: 12, maxWidth: 480 }}
             >
-              Step 1 of 2. Register an account, then finish your donor profile
-              in the next step.
+              Step 1 of 2. Register an account, then finish your donor
+              profile in the next step.
             </p>
           </div>
         </div>
@@ -177,42 +249,111 @@ export default function Register() {
           )}
 
           <form onSubmit={handleSubmit} style={{ display: "grid", gap: 18 }}>
+            {/* --- Email + OTP --- */}
             <div>
-              <label style={labelStyle} htmlFor="full_name">
-                Full name
+              <label style={labelStyle} htmlFor="email">
+                Email
               </label>
-              <input
-                style={fieldStyle}
-                id="full_name"
-                type="text"
-                name="full_name"
-                value={form.full_name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 18,
-              }}
-            >
-              <div>
-                <label style={labelStyle} htmlFor="email">
-                  Email
-                </label>
+              <div style={{ display: "flex", gap: 10 }}>
                 <input
-                  style={fieldStyle}
+                  style={{ ...fieldStyle, flex: 1 }}
                   id="email"
                   type="email"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
+                  disabled={emailVerified}
+                  required
+                />
+                {!emailVerified && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleSendOtp}
+                    disabled={otpStatus.loading || !form.email}
+                    style={{ whiteSpace: "nowrap" }}
+                  >
+                    {otpStatus.loading && !otpSent
+                      ? "Sending…"
+                      : otpSent
+                        ? "Resend code"
+                        : "Send code"}
+                  </button>
+                )}
+                {emailVerified && (
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      color: "#2F6B4F",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    ✓ Verified
+                  </span>
+                )}
+              </div>
+
+              {otpSent && !emailVerified && (
+                <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                  <input
+                    style={{ ...fieldStyle, flex: 1 }}
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="6-digit code"
+                    value={otpCode}
+                    onChange={(e) =>
+                      setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleVerifyOtp}
+                    disabled={otpStatus.loading}
+                    style={{ whiteSpace: "nowrap" }}
+                  >
+                    {otpStatus.loading ? "Checking…" : "Verify"}
+                  </button>
+                </div>
+              )}
+
+              {otpStatus.error && (
+                <div style={{ fontSize: 13, color: "#AB1D2E", marginTop: 6 }}>
+                  {otpStatus.error}
+                </div>
+              )}
+              {otpSent && !emailVerified && !otpStatus.error && (
+                <div style={{ fontSize: 13, color: "#9A9280", marginTop: 6 }}>
+                  We sent a code to {form.email}. It expires in 10 minutes.
+                </div>
+              )}
+            </div>
+
+            {/* --- Rest of the form --- */}
+            <div
+              style={{
+                display: "grid",
+                gap: 18,
+              }}
+            >
+              <div>
+                <label style={labelStyle} htmlFor="full_name">
+                  Full name
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="full_name"
+                  type="text"
+                  name="full_name"
+                  value={form.full_name}
+                  onChange={handleChange}
                   required
                 />
               </div>
+
               <div>
                 <label style={labelStyle} htmlFor="phone">
                   Phone number
@@ -222,112 +363,116 @@ export default function Register() {
                   id="phone"
                   type="tel"
                   name="phone"
+                  inputMode="numeric"
+                  placeholder="10-digit phone number"
                   value={form.phone}
                   onChange={handleChange}
+                  minLength={10}
+                  maxLength={10}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle} htmlFor="date_of_birth">
+                  Date of birth
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="date_of_birth"
+                  type="date"
+                  name="date_of_birth"
+                  value={form.date_of_birth}
+                  onChange={handleChange}
+                  min={MIN_DOB}
+                  max={MAX_DOB}
+                  required
+                />
+                <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
+                  You must be 18 or older to register as a donor.
+                </div>
+              </div>
+
+              <div>
+                <label style={labelStyle} htmlFor="government_id">
+                  Government ID number
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="government_id"
+                  type="text"
+                  name="government_id"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="12-digit ID number"
+                  value={form.government_id}
+                  onChange={handleChange}
+                  minLength={12}
+                  maxLength={12}
+                  required
+                />
+                <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
+                  {form.government_id.length}/12 digits entered
+                </div>
+              </div>
+
+              <div>
+                <label style={labelStyle} htmlFor="government_id_document">
+                  Upload government ID (front side)
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="government_id_document"
+                  type="file"
+                  name="government_id_document"
+                  accept="image/*,.pdf"
+                  onChange={handleFileChange}
+                  required
+                />
+                <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
+                  JPG, PNG, or PDF. Used only to verify your identity.
+                </div>
+              </div>
+
+              <div>
+                <label style={labelStyle} htmlFor="password">
+                  Password
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="password"
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle} htmlFor="password_confirmation">
+                  Confirm password
+                </label>
+                <input
+                  style={fieldStyle}
+                  id="password_confirmation"
+                  type="password"
+                  name="password_confirmation"
+                  value={form.password_confirmation}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  minLength={8}
                   required
                 />
               </div>
             </div>
 
-            <div>
-              <label style={labelStyle} htmlFor="date_of_birth">
-                Date of birth
-              </label>
-              <input
-                style={fieldStyle}
-                id="date_of_birth"
-                type="date"
-                name="date_of_birth"
-                value={form.date_of_birth}
-                onChange={handleChange}
-                min={MIN_DOB}
-                max={MAX_DOB}
-                required
-              />
-              <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
-                You must be 18 or older to register as a donor.
-              </div>
-            </div>
-
-            <div>
-              <label style={labelStyle} htmlFor="government_id">
-                Government ID number
-              </label>
-              <input
-                style={fieldStyle}
-                id="government_id"
-                type="text"
-                name="government_id"
-                inputMode="numeric"
-                autoComplete="off"
-                placeholder="12-digit ID number"
-                value={form.government_id}
-                onChange={handleChange}
-                minLength={12}
-                maxLength={12}
-                required
-              />
-              <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
-                {form.government_id.length}/12 digits entered
-              </div>
-            </div>
-
-            <div>
-              <label style={labelStyle} htmlFor="government_id_document">
-                Upload government ID (front side)
-              </label>
-              <input
-                style={fieldStyle}
-                id="government_id_document"
-                type="file"
-                name="government_id_document"
-                accept="image/*,.pdf"
-                onChange={handleFileChange}
-                required
-              />
-              <div style={{ fontSize: 13, color: "#9A9280", marginTop: 4 }}>
-                JPG, PNG, or PDF. Used only to verify your identity.
-              </div>
-            </div>
-
-            <div>
-              <label style={labelStyle} htmlFor="password">
-                Password
-              </label>
-              <input
-                style={fieldStyle}
-                id="password"
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                autoComplete="new-password"
-                minLength={8}
-                required
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle} htmlFor="password_confirmation">
-                Confirm password
-              </label>
-              <input
-                style={fieldStyle}
-                id="password_confirmation"
-                type="password"
-                name="password_confirmation"
-                value={form.password_confirmation}
-                onChange={handleChange}
-                autoComplete="new-password"
-                minLength={8}
-                required
-              />
-            </div>
-
             <button
               className="btn btn-primary"
               type="submit"
-              disabled={status.loading}
+              disabled={status.loading || !emailVerified}
               style={{ justifySelf: "start", marginTop: 8 }}
             >
               {status.loading ? "Creating account…" : "Continue"}
