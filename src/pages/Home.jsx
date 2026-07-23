@@ -258,7 +258,7 @@ export default function Home() {
                     />
                   ))}
                 </div>
-                <div className="donor-card-serial">No. 000–CB–2026</div>
+                
               </div>
               <div className="hero-photo-feature" aria-hidden="true">
                 <img
@@ -314,11 +314,11 @@ export default function Home() {
           <div className="about-teaser-row">
             <div className="photo-plate photo-plate--about">
               <img
-                src="/photo.jpg"
+                src="/modi.jpg"
                 alt="Donors and volunteers at a Community Blood drive"
               />
               <span className="photo-plate-caption">
-                Donors at a recent drive
+                Shri Narendra Modi
               </span>
             </div>
             <div className="about-teaser-copy">

@@ -10,6 +10,7 @@ export default function Navbar({ tone = "dark" }) {
   const onAbout = location.pathname === "/about";
   const onHowItWorks = location.pathname === "/how-it-works";
   const onContact = location.pathname === "/contact";
+  const onFindDonor = location.pathname === "/find-donor";
   const onNews = location.pathname === "/news";
 
   // Close the mobile menu whenever the route changes
@@ -55,6 +56,11 @@ export default function Navbar({ tone = "dark" }) {
         <li>
           <Link to="/contact" className={onContact ? "is-active" : ""}>
             Contact
+          </Link>
+        </li>
+        <li>
+          <Link to="/find-donor" className={onFindDonor ? "is-active" : ""}>
+            Find a donor
           </Link>
         </li>
 
@@ -117,6 +123,11 @@ export default function Navbar({ tone = "dark" }) {
           <li>
             <Link to="/contact" className={onContact ? "is-active" : ""}>
               Contact
+            </Link>
+          </li>
+          <li>
+            <Link to="/find-donor" className={onFindDonor ? "is-active" : ""}>
+              Find a donor
             </Link>
           </li>
 

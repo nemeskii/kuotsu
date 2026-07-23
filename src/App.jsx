@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
+import FindDonor from "./pages/FindDonor";
 import Register from "./pages/Register";
 import CompleteProfile from "./pages/CompleteProfile";
 import DonorLogin from "./pages/DonorLogin";
@@ -27,6 +28,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/find-donor" element={<FindDonor />} />
 
         <Route path="/register" element={<Register />} />
         <Route

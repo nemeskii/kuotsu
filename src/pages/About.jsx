@@ -18,23 +18,53 @@ const testimonials = [
     tag: "Donor · O-negative",
     quote:
       "I registered on a Tuesday and got a call by Thursday. It felt real in a way a poster on a wall never did.",
-    name: "Ato K., 4-time donor",
+    name: "Ato Kuotsu, 4-time donor",
     initial: "A",
     photo: "/photo.png",
   },
   {
-    tag: "Recipient's family",
+    tag: "Donor · A-negative",
     quote:
       "My father needed three units within a day of surgery. Community Blood found donors before the hospital's own list did.",
-    name: "Temjen A.",
+    name: "Kevikietuo Yietsu",
     initial: "T",
+    photo: "/22.jpg",
   },
   {
     tag: "Donor · A-positive",
     quote:
       "The two-minute registration wasn't a marketing line. It genuinely took two minutes, and I still get matched months later.",
-    name: "Priya M., first-time donor",
+    name: "Bauang Phom",
     initial: "P",
+    photo: "/55.jpg"
+  },
+  {
+    tag: "Donor · B-negative",
+    quote:
+      "Donating blood became a habit after my first experience. Knowing it could help save someone's life is reason enough to keep coming back.",
+    name: "Limasanen Lemtor",
+    initial: "T",
+    photo: "/1.jpg",
+  },
+  {
+    tag: "Donor · A-negative",
+    quote:
+      "I never imagined such a simple act could make such a big difference. Every donation reminds me that helping others doesn't have to be complicated.",
+
+    name: "Vizhakuo Khezhie",
+    initial: "T",
+    photo: "/44.jpeg",
+    objectPosition: "center top",
+  },
+  {
+    tag: "Donor · A-negative",
+    quote:
+      "A single unit of blood can save a life, but a willing heart can inspire many more. To every blood donor—your selfless act is a gift of hope, compassion, and humanity. Thank you for making a life-saving difference.",
+
+    name: "Marikho",
+    initial: "M",
+    photo: "/321.jpg",
+    objectPosition: "center top",
   },
 ];
 
@@ -81,28 +111,50 @@ export default function About() {
 
       {/* Story */}
       <div className="band-paper section">
-        <div className="site-inner story">
-          <p>
-            Most blood donation efforts run on a calendar: a drive gets
-            scheduled, volunteers show up, and then the list goes quiet until
-            the next one. That works for planned surgeries. It doesn't work
-            for the 2 a.m. emergency, the sudden complication, the patient who
-            can't wait three weeks for the next scheduled event.
-          </p>
-          <p>
-            Community Blood was built to close that gap. Instead of asking
-            people to remember a drive date, we ask them to register once —
-            their blood type, their contact details, where they are — and we
-            keep that on file. When a real, verified request comes in that
-            matches their type, we reach out directly. No newsletter, no
-            guesswork, just a call when it actually matters.
-          </p>
-          <p>
-            We're a small, local operation, not a hospital system or a
-            national charity. That's deliberate: it lets us move fast, verify
-            requests directly with the people asking for help, and keep the
-            whole process transparent to the donors who make it possible.
-          </p>
+        <div className="site-inner story-grid">
+          <div className="story-media">
+            <img
+              src="/neiphiu.jpg"
+              alt="Volunteers coordinating a blood donation match"
+              className="story-image"
+            />
+            <blockquote className="story-note">
+              <p className="story-note-quote">
+                "Every blood donation is a priceless gift of hope and life. I
+                salute our community blood donors for their selfless
+                compassion and unwavering commitment to saving lives.
+                Together, let us continue to build a healthier, stronger, and
+                more caring Nagaland."
+              </p>
+              <footer className="story-note-attribution">
+                Hon'ble Shri Neiphiu Rio 
+                <br /> Chief Minister of Nagaland
+              </footer>
+            </blockquote>
+          </div>
+          <div className="story">
+            <p>
+              Most blood donation efforts run on a calendar: a drive gets
+              scheduled, volunteers show up, and then the list goes quiet until
+              the next one. That works for planned surgeries. It doesn't work
+              for the 2 a.m. emergency, the sudden complication, the patient who
+              can't wait three weeks for the next scheduled event.
+            </p>
+            <p>
+              Community Blood was built to close that gap. Instead of asking
+              people to remember a drive date, we ask them to register once —
+              their blood type, their contact details, where they are — and we
+              keep that on file. When a real, verified request comes in that
+              matches their type, we reach out directly. No newsletter, no
+              guesswork, just a call when it actually matters.
+            </p>
+            <p>
+              We're a small, local operation, not a hospital system or a
+              national charity. That's deliberate: it lets us move fast, verify
+              requests directly with the people asking for help, and keep the
+              whole process transparent to the donors who make it possible.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -139,6 +191,7 @@ export default function About() {
                     src={t.photo}
                     alt={t.name}
                     className="testimonial-avatar testimonial-avatar--photo"
+                    style={{ objectPosition: t.objectPosition || "center" }}
                   />
                 ) : (
                   <div className="testimonial-avatar">{t.initial}</div>

@@ -5,6 +5,7 @@ import "../styles/theme.css";
 import "./AdminDashboard.css";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+const TODAY = new Date().toISOString().split("T")[0];
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -308,6 +309,7 @@ export default function Dashboard() {
                   name="donation_date"
                   value={form.donation_date}
                   onChange={handleChange}
+                  max={TODAY}
                   required
                 />
               </label>
@@ -320,6 +322,7 @@ export default function Dashboard() {
                   name="location"
                   value={form.location}
                   onChange={handleChange}
+                  required
                 />
               </label>
 
@@ -386,7 +389,69 @@ export default function Dashboard() {
                         <td>{d.units}</td>
                         <td>{d.location || "—"}</td>
                         <td>
-                          <span className="admin-dash-status">{d.status}</span>
+                          {d.status === "completed" && (
+                            <span
+                              className="admin-dash-status"
+                              style={{
+                                color: "#2F6B4F",
+                                background: "rgba(47, 107, 79, 0.12)",
+                                border: "1px solid #2F6B4F",
+                                borderRadius: 6,
+                                padding: "3px 10px",
+                                fontSize: 13,
+                                fontWeight: 600,
+                              }}
+                            >
+                              Approved
+                            </span>
+                          )}
+
+                          {d.status === "cancelled" && (
+                            <div>
+                              <span
+                                className="admin-dash-status"
+                                style={{
+                                  color: "#AB1D2E",
+                                  background: "rgba(171, 29, 46, 0.1)",
+                                  border: "1px solid #AB1D2E",
+                                  borderRadius: 6,
+                                  padding: "3px 10px",
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Rejected
+                              </span>
+                              <div
+                                style={{
+                                  fontSize: 12,
+                                  color: "#5A5344",
+                                  marginTop: 4,
+                                }}
+                              >
+                                This donation was not approved. Contact the
+                                blood bank for details.
+                              </div>
+                            </div>
+                          )}
+
+                          {d.status !== "completed" &&
+                            d.status !== "cancelled" && (
+                              <span
+                                className="admin-dash-status"
+                                style={{
+                                  color: "#8A6D3B",
+                                  background: "rgba(138, 109, 59, 0.1)",
+                                  border: "1px solid #8A6D3B",
+                                  borderRadius: 6,
+                                  padding: "3px 10px",
+                                  fontSize: 13,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Awaiting review
+                              </span>
+                            )}
                         </td>
                       </tr>
                     ))}

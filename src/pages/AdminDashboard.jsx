@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
 import '../styles/theme.css';
 import './AdminDashboard.css';
@@ -13,6 +13,8 @@ export default function AdminDashboard() {
   const [filterBloodGroup, setFilterBloodGroup] = useState('');
   const [donations, setDonations] = useState([]);
   const [donationsLoading, setDonationsLoading] = useState(true);
+  const [bloodRequests, setBloodRequests] = useState([]);
+  const [bloodRequestsLoading, setBloodRequestsLoading] = useState(true);
   const navigate = useNavigate();
   const [idModalUrl, setIdModalUrl] = useState(null);
   const [idModalLoading, setIdModalLoading] = useState(false);
@@ -79,6 +81,31 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchPendingBloodRequests = async () => {
+    setBloodRequestsLoading(true);
+    try {
+      const res = await api.get('/admin/blood-requests', {
+        params: { status: 'pending' },
+      });
+      setBloodRequests(res.data);
+    } catch (err) {
+      // non-critical, ignore
+    } finally {
+      setBloodRequestsLoading(false);
+    }
+  };
+
+  const updateRequestStatus = async (bloodRequest, statusValue) => {
+    try {
+      await api.put(`/admin/blood-requests/${bloodRequest.id}`, {
+        status: statusValue,
+      });
+      fetchPendingBloodRequests();
+    } catch (e) {
+      alert('Failed to update request');
+    }
+  };
+
   useEffect(() => {
     fetchDonors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,6 +113,10 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchPendingDonations();
+  }, []);
+
+  useEffect(() => {
+    fetchPendingBloodRequests();
   }, []);
 
   const handleLogout = async () => {
@@ -132,9 +163,13 @@ export default function AdminDashboard() {
       <div className="admin-dash-header">
         <div className="admin-dash-header-inner">
           <div>
-            <span className="site-mark admin-dash-mark">
+            <Link
+              to="/"
+              className="site-mark admin-dash-mark"
+              style={{ textDecoration: 'none' }}
+            >
               COMMUNITY<span>BLOOD</span>
-            </span>
+            </Link>
             <div className="site-eyebrow admin-dash-eyebrow">Admin panel</div>
           </div>
           <button className="admin-dash-logout" onClick={handleLogout}>
@@ -144,6 +179,76 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-dash-body">
+        <div className="admin-dash-titlebar">
+          <h1 className="admin-dash-heading">Blood requests</h1>
+          <p className="admin-dash-sub">
+            {bloodRequestsLoading
+              ? 'Loading…'
+              : `${bloodRequests.length} awaiting response`}
+          </p>
+        </div>
+
+        <div className="admin-dash-table-wrap" style={{ marginBottom: 40 }}>
+          <table className="admin-dash-table">
+            <thead>
+              <tr>
+                <th>Requester</th>
+                <th>Blood group</th>
+                <th>City</th>
+                <th>Reason</th>
+                <th className="admin-dash-th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bloodRequestsLoading && (
+                <tr>
+                  <td colSpan={5} className="admin-dash-empty">
+                    Loading…
+                  </td>
+                </tr>
+              )}
+              {!bloodRequestsLoading && bloodRequests.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="admin-dash-empty">
+                    No pending requests.
+                  </td>
+                </tr>
+              )}
+              {!bloodRequestsLoading &&
+                bloodRequests.map((r) => (
+                  <tr key={r.id}>
+                    <td className="admin-dash-name">
+                      {r.requester_name}
+                      <div style={{ fontSize: 13, color: '#9A9280' }}>
+                        {r.requester_phone}
+                        {r.requester_email ? ` · ${r.requester_email}` : ''}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="admin-dash-badge">{r.blood_group}</span>
+                    </td>
+                    <td>{r.city || '—'}</td>
+                    <td style={{ maxWidth: 240 }}>{r.reason || '—'}</td>
+                    <td className="admin-dash-actions">
+                      <button
+                        className="admin-dash-btn"
+                        onClick={() => updateRequestStatus(r, 'contacted')}
+                      >
+                        Mark contacted
+                      </button>
+                      <button
+                        className="admin-dash-btn admin-dash-btn--danger"
+                        onClick={() => updateRequestStatus(r, 'closed')}
+                      >
+                        Close
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+
         <div className="admin-dash-titlebar">
           <h1 className="admin-dash-heading">Pending donations</h1>
           <p className="admin-dash-sub">
