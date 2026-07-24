@@ -13,17 +13,14 @@ export default function Navbar({ tone = "dark" }) {
   const onFindDonor = location.pathname === "/find-donor";
   const onNews = location.pathname === "/news";
 
-  // Close the mobile menu whenever the route changes
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
 
-  // Check donor login status whenever the route changes
   useEffect(() => {
     setIsDonorLoggedIn(!!localStorage.getItem("donor_token"));
   }, [location.pathname]);
 
-  // Prevent background scroll while the mobile menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -74,6 +71,28 @@ export default function Navbar({ tone = "dark" }) {
           </li>
         )}
       </ul>
+
+      <svg
+        width="52"
+        height="52"
+        viewBox="240 60 200 200"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ borderRadius: "12px", flexShrink: 0, marginLeft: "auto" }}
+      >
+        <rect x="240" y="60" width="200" height="200" rx="16" fill="#F3E9D8" />
+        <path
+          d="M340 90 C340 90 288 168 288 202 C288 234 311 260 340 260 C369 260 392 234 392 202 C392 168 340 90 340 90 Z"
+          fill="#A3232B"
+        />
+        <polyline
+          points="298,202 320,202 330,180 344,224 356,196 364,202 382,202"
+          fill="none"
+          stroke="#F3E9D8"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
 
       {/* Mobile hamburger toggle */}
       <button
