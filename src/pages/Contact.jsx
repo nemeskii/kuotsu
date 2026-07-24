@@ -10,7 +10,7 @@ import "./Home.css";
 // aren't hardcoded in source.
 const EMAILJS_SERVICE_ID = "service_vgozpvy";
 const EMAILJS_TEMPLATE_ID = "template_agx2w6j";
-const EMAILJS_PUBLIC_KEY = "t1L_5HTdN5WKK6519";
+const EMAILJS_PUBLIC_KEY = "47UzJlkukcVvJQNxl";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
